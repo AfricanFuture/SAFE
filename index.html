@@ -18,6 +18,7 @@
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             width: 350px;
+            position: relative;
         }
         .tab-container {
             display: flex;
@@ -61,6 +62,10 @@
         }
         button:hover {
             background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
         #message, #login-message {
             margin: 15px 0;
@@ -116,9 +121,53 @@
             text-align: center;
             font-size: 14px;
         }
+        /* Loading overlay styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: white;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loading-text">Processing...</div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="tab-container">
             <button class="tab active" onclick="openTab('signup')">Sign Up</button>
@@ -141,7 +190,7 @@
             <input type="email" id="signup-email" placeholder="Email" required>
             <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6">
             <input type="text" id="phone" placeholder="Phone Number (optional)">
-            <input type="text" id="userr-uid" placeholder="Referal Code (optional)">
+            <input type="text" id="userr-uid" placeholder="Admin UID (optional)">
             <input type="hidden" id="referral-code-input">
             
             <div class="captcha-container">
@@ -150,7 +199,7 @@
                 <input type="text" id="captcha-input" placeholder="Enter the answer" required>
             </div>
             
-            <button onclick="signUp()">Sign Up</button>
+            <button onclick="signUp()" id="signup-button">Sign Up</button>
         </div>
 
         <div id="login-form" class="form-container">
@@ -158,7 +207,7 @@
             <div id="login-message"></div>
             <input type="email" id="login-email" placeholder="Email" required>
             <input type="password" id="login-password" placeholder="Password" required>
-            <button onclick="login()">Login</button>
+            <button onclick="login()" id="login-button">Login</button>
         </div>
     </div>
 
@@ -186,6 +235,22 @@
 
         // CAPTCHA variables
         let captchaAnswer;
+        
+        // Loading state functions
+        function showLoading(message = 'Processing...') {
+            document.getElementById('loading-text').textContent = message;
+            document.getElementById('loading-overlay').style.display = 'flex';
+            // Disable buttons
+            document.getElementById('signup-button').disabled = true;
+            document.getElementById('login-button').disabled = true;
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+            // Enable buttons
+            document.getElementById('signup-button').disabled = false;
+            document.getElementById('login-button').disabled = false;
+        }
         
         // Check for referral code in URL
         function checkForReferralCode() {
@@ -315,6 +380,8 @@
                 return;
             }
 
+            showLoading('Creating your account...');
+
             try {
                 // Create user
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -373,6 +440,7 @@
             } catch (error) {
                 showMessage(error.message, 'error');
             } finally {
+                hideLoading();
                 generateCaptcha();
                 document.getElementById('captcha-input').value = '';
             }
@@ -382,6 +450,8 @@
         async function login() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
+
+            showLoading('Logging in...');
 
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
@@ -401,6 +471,8 @@
                 setTimeout(() => window.location.href = 'home.html', 1500);
             } catch (error) {
                 showLoginMessage(error.message, 'error');
+            } finally {
+                hideLoading();
             }
         }
 
@@ -416,10 +488,11 @@
             msgDiv.textContent = message;
             msgDiv.className = type;
         }
-  // Check authentication state
+        
+        // Check authentication state
         auth.onAuthStateChanged((user) => {
             if (user) {
-                window.location.href = 'home.html';
+                window.location.href = 'index.html';
             } 
         });
     </script>

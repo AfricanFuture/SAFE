@@ -136,11 +136,11 @@
                 currentAdminUid = user.uid;
                 document.getElementById('current-user').innerHTML = `
                     <strong>Logged in as:</strong> ${user.email}<br>
-                    <strong>Your UID:</strong> ${user.uid}
+                    <strong>Your Referal Code:</strong> ${user.uid}
                 `;
                 loadNotifications(user.uid);
             } else {
-                window.location.href = 'sign.html?tab=login';
+                window.location.href = 'index.html?tab=login';
             }
         });
 

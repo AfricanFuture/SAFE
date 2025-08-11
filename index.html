@@ -108,6 +108,14 @@
             cursor: pointer;
             font-size: 18px;
         }
+        .referral-notice {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -121,6 +129,10 @@
             <h2>Create Account</h2>
             <div id="message"></div>
             
+            <div id="referral-notice" class="referral-notice" style="display: none;">
+                Signing up with referral code: <strong id="referral-code-display"></strong>
+            </div>
+            
             <div class="name-fields">
                 <input type="text" id="first-name" placeholder="First Name" required>
                 <input type="text" id="last-name" placeholder="Last Name" required>
@@ -130,6 +142,7 @@
             <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6">
             <input type="text" id="phone" placeholder="Phone Number (optional)">
             <input type="text" id="admin-uid" placeholder="Admin UID (optional)">
+            <input type="hidden" id="referral-code-input">
             
             <div class="captcha-container">
                 <div class="captcha-challenge" id="captcha-challenge"></div>
@@ -174,6 +187,18 @@
         // CAPTCHA variables
         let captchaAnswer;
         
+        // Check for referral code in URL
+        function checkForReferralCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            
+            if (refCode) {
+                document.getElementById('referral-code-input').value = refCode;
+                document.getElementById('referral-code-display').textContent = refCode;
+                document.getElementById('referral-notice').style.display = 'block';
+            }
+        }
+        
         // Generate CAPTCHA challenge
         function generateCaptcha() {
             const num1 = Math.floor(Math.random() * 10) + 1;
@@ -194,6 +219,7 @@
         
         // Generate CAPTCHA on page load
         generateCaptcha();
+        checkForReferralCode();
 
         // Tab switching
         function openTab(tabName) {
@@ -213,6 +239,63 @@
             return result;
         }
 
+        // Process referral if code exists
+        async function processReferral(newUserId, newUserEmail, referralCode) {
+            if (!referralCode) return false;
+            
+            try {
+                let referrerQuery;
+                
+                // Check if referral code is a UID (28 characters)
+                if (referralCode.length === 28) {
+                    const userDoc = await db.collection('users').doc(referralCode).get();
+                    if (!userDoc.exists) {
+                        showMessage('Invalid referral code - no user found', 'error');
+                        return false;
+                    }
+                    referrerQuery = userDoc;
+                } 
+                // Otherwise treat as referral code (8 characters)
+                else {
+                    referrerQuery = await db.collection('users')
+                        .where('referralCode', '==', referralCode.toUpperCase())
+                        .limit(1)
+                        .get();
+                    
+                    if (referrerQuery.empty) {
+                        showMessage('Invalid referral code - no user found', 'error');
+                        return false;
+                    }
+                    referrerQuery = referrerQuery.docs[0];
+                }
+                
+                const referrerId = referrerQuery.id;
+                const invitedUser = {
+                    userId: newUserId,
+                    email: newUserEmail,
+                    date: firebase.firestore.FieldValue.serverTimestamp(),
+                    pointsEarned: 10
+                };
+                
+                // Update referrer's document in Firestore
+                await db.collection('users').doc(referrerId).update({
+                    points: firebase.firestore.FieldValue.increment(10),
+                    invitedUsers: firebase.firestore.FieldValue.arrayUnion(invitedUser)
+                });
+                
+                // Update referrer's points in Realtime Database
+                await rdb.ref('users/' + referrerId + '/points').transaction((currentPoints) => {
+                    return (currentPoints || 0) + 10;
+                });
+                
+                console.log("Referrer points updated successfully");
+                return true;
+            } catch (error) {
+                console.error("Error updating referrer points:", error);
+                return false;
+            }
+        }
+
         // Sign up function
         async function signUp() {
             const firstName = document.getElementById('first-name').value;
@@ -222,6 +305,7 @@
             const phone = document.getElementById('phone').value;
             const adminUid = document.getElementById('admin-uid').value;
             const userCaptchaInput = document.getElementById('captcha-input').value;
+            const referralCode = document.getElementById('referral-code-input').value;
             
             // Validate CAPTCHA
             if (parseInt(userCaptchaInput) !== captchaAnswer) {
@@ -256,7 +340,7 @@
                 // Save user data to Firestore
                 await db.collection('users').doc(user.uid).set(userData);
                 
-                // Save basic user data to RTDB (for real-time features if needed)
+                // Save basic user data to RTDB
                 await rdb.ref('users/' + user.uid).set({
                     email: email,
                     firstName: firstName,
@@ -264,6 +348,11 @@
                     status: 'active',
                     lastLogin: null
                 });
+
+                // Process referral if exists
+                if (referralCode) {
+                    await processReferral(user.uid, email, referralCode);
+                }
 
                 // Notify admin if UID was provided
                 if (adminUid) {
@@ -337,4 +426,3 @@
     </script>
 </body>
 </html>
-                        

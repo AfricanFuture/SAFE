@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Withdraw - VideoCall</title>
+    <title>Deposit - SAFE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -33,18 +33,14 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
         
-        h1, h2, h3 {
-            color: #333;
-            margin-top: 0;
-        }
-        
         h1 {
+            color: #333;
             text-align: center;
             margin-bottom: 30px;
         }
         
         .balance-card {
-            background-color: var(--info);
+            background-color: var(--success);
             color: white;
             padding: 20px;
             border-radius: 8px;
@@ -58,11 +54,57 @@
             margin: 10px 0;
         }
         
-        .form-section {
-            margin: 20px 0;
+        .wallet-info {
+            background-color: var(--light);
             padding: 20px;
-            border: 1px solid #eee;
             border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+.qr-code {
+    max-width: 200px;
+    margin: 15px auto;
+    display: block;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: white;
+}
+        
+        .btn-info {
+            background-color: var(--info);
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+            padding: 12px;
         }
         
         .form-group {
@@ -84,35 +126,24 @@
             font-size: 16px;
         }
         
-        .btn {
-            display: inline-block;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
+        .file-upload {
+            border: 2px dashed #ddd;
+            padding: 20px;
             text-align: center;
-            transition: all 0.3s;
+            border-radius: 4px;
+            margin: 10px 0;
+            cursor: pointer;
         }
         
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
+        .file-upload input {
+            display: none;
         }
         
-        .btn-primary:hover {
-            background-color: #0069d9;
-        }
-        
-        .btn-block {
-            display: block;
-            width: 100%;
-            padding: 12px;
-        }
-        
-        .btn:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
+        .preview-image {
+            max-width: 100%;
+            margin-top: 10px;
+            display: none;
+            border-radius: 4px;
         }
         
         .history-item {
@@ -125,7 +156,7 @@
         
         .history-amount {
             font-weight: bold;
-            color: var(--danger);
+            color: var(--success);
         }
         
         .history-date {
@@ -189,11 +220,6 @@
             margin-top: 5px;
         }
         
-        .text-danger {
-            color: var(--danger);
-            font-weight: bold;
-        }
-        
         .alert {
             padding: 10px 15px;
             border-radius: 4px;
@@ -205,151 +231,65 @@
             color: #0c5460;
         }
         
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
         .loading {
             text-align: center;
             padding: 20px;
             color: #6c757d;
         }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            max-width: 90%;
-            max-height: 90%;
-            overflow: auto;
-            position: relative;
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        .attempt-warning {
-            color: var(--danger);
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .timer-display {
-            color: var(--danger);
-            font-weight: bold;
-        }
-        
-        /* Added styles for QR code */
-        .qr-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .qr-image {
-            max-width: 200px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            background: white;
-        }
-        
-        .wallet-address {
-            font-family: monospace;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 4px;
-            word-break: break-all;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Withdraw USDT (TRC20)</h1>
+        <h1>Deposit USDT (TRC20)</h1>
         
         <div class="balance-card">
-            <div>Available for Withdrawal</div>
-            <div class="balance-amount" id="withdraw-balance">0.00</div>
+            <div>Your Deposit Balance</div>
+            <div class="balance-amount" id="deposit-balance">0.00</div>
             <div>USDT</div>
-            <div class="text-muted">Minimum withdrawal: <span class="text-danger">15 USDT</span></div>
         </div>
         
+<div class="wallet-info">
+    <h3>Our TRC20 Wallet Address</h3>
+    <img src="trc.jpg" class="qr-code" alt="TRC20 Wallet QR Code">
+    <div id="wallet-address">TK3RviHLX31oC6qNdfaF9Wuh8JJ4bQqAXu</div>
+    <button class="btn btn-info btn-block" onclick="copyWalletAddress()">
+        <i class="fas fa-copy"></i> Copy Address
+    </button>
+    <div class="text-muted">Minimum deposit: 10 USDT. Only TRC20 network supported.</div>
+</div>
         <div class="form-section">
-            <h3>Withdraw Funds</h3>
+            <h3>Submit Deposit Proof</h3>
             <div class="form-group">
-                <label for="withdraw-amount">Amount (USDT)</label>
-                <input type="number" id="withdraw-amount" placeholder="Enter amount (min 15 USDT)" min="15" step="0.01">
+                <label for="deposit-amount">Amount (USDT)</label>
+                <input type="number" id="deposit-amount" placeholder="10" min="10" step="0.01">
             </div>
             <div class="form-group">
-                <label for="wallet-address">Your TRC20 Wallet Address</label>
-                <input type="text" id="wallet-address" placeholder="Enter your USDT (TRC20) wallet address">
+                <label for="transaction-hash">Transaction Hash</label>
+                <input type="text" id="transaction-hash" placeholder="Enter transaction hash">
             </div>
             <div class="form-group">
-                <label for="withdraw-code">4-Digit Withdrawal Code</label>
-                <input type="text" id="withdraw-code" placeholder="Enter your 4-digit withdrawal code" maxlength="4" pattern="\d{4}">
-                <div class="attempt-warning" id="attempt-warning">
-                    Too many incorrect attempts. Please wait <span class="timer-display" id="timer-display"></span> before trying again.
+                <label>Screenshot Proof</label>
+                <div class="file-upload" onclick="document.getElementById('screenshot').click()">
+                    <input type="file" id="screenshot" accept="image/*">
+                    <div class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:24px"></i><br>
+                        Click to upload screenshot
+                    </div>
+                    <img id="preview" class="preview-image" alt="Preview">
                 </div>
-                <div class="text-muted">
-                    <a href="#" onclick="recoverWithdrawalCode(); return false;">Forgot your code? Contact support</a>
-                </div>
             </div>
-            <button class="btn btn-primary btn-block" id="submit-withdraw">
-                <i class="fas fa-paper-plane"></i> Request Withdrawal
+            <button class="btn btn-primary btn-block" id="submit-deposit">
+                <i class="fas fa-paper-plane"></i> Submit Deposit
             </button>
             <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Withdrawals are processed within 24 hours. Please ensure your wallet address is correct.
-            </div>
-        </div>
-        
-        <!-- Added QR code section -->
-        <div class="form-section">
-            <h3>Deposit USDT (TRC20)</h3>
-            <div class="qr-container">
-                <img src="trc.jpg" alt="USDT TRC20 Deposit QR Code" class="qr-image">
-                <div class="wallet-address" id="deposit-address">TNPq5YvXKX8XhJ4W8Z9z7Y6wX3hJ4W8Z9</div>
-                <div class="text-muted">Scan QR code or copy address above to deposit USDT (TRC20)</div>
-            </div>
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Deposits may take up to 15 minutes to reflect in your account.
+                <i class="fas fa-info-circle"></i> Deposits are processed within 24 hours after verification.
             </div>
         </div>
         
         <div class="form-section">
-            <h3>Withdrawal History</h3>
-            <div id="withdraw-history">
-                <div class="loading">Loading your withdrawal history...</div>
+            <h3>Deposit History</h3>
+            <div id="deposit-history">
+                <div class="loading">Loading your deposit history...</div>
             </div>
         </div>
         
@@ -358,13 +298,9 @@
                 <i class="fas fa-home"></i>
                 <div>Home</div>
             </div>
-            <div class="nav-btn" onclick="window.location.href='deposit.html'">
+            <div class="nav-btn" onclick="window.location.href='withdraw.html'">
                 <i class="fas fa-money-bill-wave"></i>
-                <div>Deposit</div>
-            </div>
-            <div class="nav-btn" onclick="window.location.href='product.html'">
-                <i class="fas fa-gem"></i>
-                <div>Products</div>
+                <div>Withdraw</div>
             </div>
         </div>
         
@@ -378,6 +314,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <script>
         // Firebase Configuration
@@ -396,275 +333,77 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         const rdb = firebase.database();
+        const storage = firebase.storage();
 
         // DOM elements
-        const withdrawBalanceEl = document.getElementById('withdraw-balance');
-        const withdrawAmountInput = document.getElementById('withdraw-amount');
-        const walletAddressInput = document.getElementById('wallet-address');
-        const withdrawCodeInput = document.getElementById('withdraw-code');
-        const submitWithdrawBtn = document.getElementById('submit-withdraw');
-        const withdrawHistoryEl = document.getElementById('withdraw-history');
-        const attemptWarning = document.getElementById('attempt-warning');
-        const timerDisplay = document.getElementById('timer-display');
-        const depositAddressEl = document.getElementById('deposit-address');
+        const depositBalanceEl = document.getElementById('deposit-balance');
+        const depositAmountInput = document.getElementById('deposit-amount');
+        const transactionHashInput = document.getElementById('transaction-hash');
+        const screenshotInput = document.getElementById('screenshot');
+        const previewImage = document.getElementById('preview');
+        const submitDepositBtn = document.getElementById('submit-deposit');
+        const depositHistoryEl = document.getElementById('deposit-history');
+        const walletAddressEl = document.getElementById('wallet-address');
 
-        // Security variables
-        let failedAttempts = 0;
-        let lastAttemptTime = 0;
-        let lockoutTimer = null;
-        const attemptDelays = [30, 60, 120, 240, 480]; // 30s, 1m, 2m, 4m, 8m
-
-        // Check authentication state
+        // Check auth state
         auth.onAuthStateChanged((user) => {
             if (!user) {
                 window.location.href = 'index.html';
             } else {
                 loadUserData(user.uid);
-                loadWithdrawalHistory(user.uid);
-                setupWithdrawalListener(user.uid);
-                checkUserHasWithdrawalCode(user.uid);
-                
-                // Load attempt history from localStorage
-                const attemptData = localStorage.getItem(`withdrawAttempts_${user.uid}`);
-                if (attemptData) {
-                    const parsedData = JSON.parse(attemptData);
-                    failedAttempts = parsedData.failedAttempts || 0;
-                    lastAttemptTime = parsedData.lastAttemptTime || 0;
-                    
-                    // Check if user is still in lockout period
-                    const timeSinceLastAttempt = (Date.now() - lastAttemptTime) / 1000;
-                    const currentDelay = getCurrentDelay();
-                    
-                    if (timeSinceLastAttempt < currentDelay) {
-                        const remainingTime = Math.ceil(currentDelay - timeSinceLastAttempt);
-                        startLockoutTimer(remainingTime);
-                    }
-                }
+                loadDepositHistory(user.uid);
+                setupDepositListener(user.uid);
             }
         });
 
-        function getCurrentDelay() {
-            const index = Math.min(failedAttempts - 1, attemptDelays.length - 1);
-            return attemptDelays[index];
-        }
-
-        function startLockoutTimer(seconds) {
-            clearTimeout(lockoutTimer);
-            
-            // Disable form inputs
-            withdrawCodeInput.disabled = true;
-            submitWithdrawBtn.disabled = true;
-            attemptWarning.style.display = 'block';
-            
-            let remaining = seconds;
-            updateTimerDisplay(remaining);
-            
-            lockoutTimer = setInterval(() => {
-                remaining--;
-                updateTimerDisplay(remaining);
-                
-                if (remaining <= 0) {
-                    clearInterval(lockoutTimer);
-                    withdrawCodeInput.disabled = false;
-                    submitWithdrawBtn.disabled = false;
-                    attemptWarning.style.display = 'none';
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            timerDisplay.textContent = `${minutes}m ${remainingSeconds}s`;
-        }
-
-        function saveAttemptData(userId) {
-            localStorage.setItem(`withdrawAttempts_${userId}`, JSON.stringify({
-                failedAttempts: failedAttempts,
-                lastAttemptTime: lastAttemptTime
-            }));
-        }
-
-        // Check if user has a withdrawal code
-        async function checkUserHasWithdrawalCode(userId) {
-            try {
-                const doc = await db.collection('withdrawalSecurity').doc(userId).get();
-                if (!doc.exists) {
-                    // User doesn't have a code yet, generate one
-                    generateWithdrawalCode(userId);
-                }
-            } catch (error) {
-                console.error("Error checking withdrawal code:", error);
-            }
-        }
-
-        // Generate a new withdrawal code
-        async function generateWithdrawalCode(userId) {
-            try {
-                const code = Math.floor(1000 + Math.random() * 9000).toString();
-                await db.collection('withdrawalSecurity').doc(userId).set({
-                    code: code,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showModal(`Your new withdrawal code is: <strong>${code}</strong><br><br>
-                Please save this code securely. You will need it for all future withdrawals.`);
-            } catch (error) {
-                console.error("Error generating withdrawal code:", error);
-                showAlert('Error generating withdrawal code. Please try again.', 'danger');
-            }
-        }
-
-        // Verify withdrawal code
-        async function verifyWithdrawalCode(userId, code) {
-            try {
-                // Check if user is in lockout period
-                const timeSinceLastAttempt = (Date.now() - lastAttemptTime) / 1000;
-                const currentDelay = getCurrentDelay();
-                
-                if (timeSinceLastAttempt < currentDelay) {
-                    const remainingTime = Math.ceil(currentDelay - timeSinceLastAttempt);
-                    startLockoutTimer(remainingTime);
-                    showAlert(`Please wait ${remainingTime} seconds before trying again.`, 'danger');
-                    return false;
-                }
-                
-                const doc = await db.collection('withdrawalSecurity').doc(userId).get();
-                if (doc.exists) {
-                    const isValid = doc.data().code === code;
-                    
-                    if (!isValid) {
-                        failedAttempts++;
-                        lastAttemptTime = Date.now();
-                        saveAttemptData(userId);
-                        
-                        const delay = getCurrentDelay();
-                        startLockoutTimer(delay);
-                        
-                        showAlert(`Incorrect withdrawal code. Please wait ${delay} seconds before trying again.`, 'danger');
-                    } else {
-                        // Reset attempt counter on successful attempt
-                        failedAttempts = 0;
-                        lastAttemptTime = 0;
-                        saveAttemptData(userId);
-                    }
-                    
-                    return isValid;
-                }
-                return false;
-            } catch (error) {
-                console.error("Error verifying withdrawal code:", error);
-                return false;
-            }
-        }
-
-        // Recover withdrawal code - contact support
-        async function recoverWithdrawalCode() {
-            const user = auth.currentUser;
-            if (!user) {
-                window.location.href = 'sign.html';
-                return;
-            }
-
-            showModal(`
-                <h3>Withdrawal Code Assistance</h3>
-                <p>For security reasons, we cannot display your withdrawal code directly.</p>
-                <p>Please contact our support team with the following information:</p>
-                <ul>
-                    <li>Your registered email: <strong>${user.email}</strong></li>
-                    <li>Account creation date</li>
-                    <li>Recent transaction details</li>
-                </ul>
-                <p>Our team will verify your identity and assist you within 24 hours.</p>
-                <button class="btn btn-primary" onclick="window.location.href='mailto:support@videocall.com'">
-                    <i class="fas fa-envelope"></i> Contact Support
-                </button>
-            `);
-        }
-
-        // Show modal dialog
-        function showModal(content) {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            
-            const modalContent = document.createElement('div');
-            modalContent.className = 'modal-content';
-            modalContent.innerHTML = content;
-            
-            const closeBtn = document.createElement('button');
-            closeBtn.className = 'modal-close';
-            closeBtn.innerHTML = '&times;';
-            closeBtn.onclick = function() {
-                document.body.removeChild(modal);
-            };
-            
-            modalContent.prepend(closeBtn);
-            modal.appendChild(modalContent);
-            document.body.appendChild(modal);
-            
-            modal.onclick = function(e) {
-                if (e.target === modal) {
-                    document.body.removeChild(modal);
-                }
-            };
-        }
-
-        // Load user data
+        // Load user balance
         function loadUserData(userId) {
             db.collection('users').doc(userId).get()
-                .then((doc) => {
+                .then(doc => {
                     if (doc.exists) {
-                        const userData = doc.data();
-                        const availableBalance = userData.taskEarnings || 0;
-                        withdrawBalanceEl.textContent = availableBalance.toFixed(2);
-                        
-                        // Disable submit button if balance is less than minimum
-                        submitWithdrawBtn.disabled = availableBalance < 15;
-                        if (submitWithdrawBtn.disabled) {
-                            submitWithdrawBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Insufficient Balance';
-                        }
+                        const balance = doc.data().depositBalance || 0;
+                        depositBalanceEl.textContent = balance.toFixed(2);
                     }
                 })
-                .catch((error) => {
-                    console.error("Error loading user data:", error);
+                .catch(error => {
+                    console.error("Error loading user balance:", error);
                     showAlert('Error loading your balance. Please refresh the page.', 'danger');
                 });
         }
 
-        // Load withdrawal history
-        function loadWithdrawalHistory(userId) {
-            rdb.ref('withdrawals').orderByChild('userId').equalTo(userId).once('value')
+        // Load deposit history
+        function loadDepositHistory(userId) {
+            rdb.ref('deposits').orderByChild('userId').equalTo(userId).once('value')
                 .then(snapshot => {
-                    withdrawHistoryEl.innerHTML = '';
+                    depositHistoryEl.innerHTML = '';
                     
                     if (!snapshot.exists()) {
-                        withdrawHistoryEl.innerHTML = '<div class="loading">No withdrawal history yet</div>';
+                        depositHistoryEl.innerHTML = '<div class="loading">No deposits yet</div>';
                         return;
                     }
                     
-                    const withdrawals = [];
+                    const deposits = [];
                     snapshot.forEach(child => {
-                        withdrawals.push({
+                        deposits.push({
                             key: child.key,
                             ...child.val()
                         });
                     });
                     
                     // Sort by timestamp (newest first)
-                    withdrawals.sort((a, b) => b.timestamp - a.timestamp);
+                    deposits.sort((a, b) => b.timestamp - a.timestamp);
                     
-                    withdrawals.forEach(withdrawal => {
-                        const date = new Date(withdrawal.timestamp);
+                    deposits.forEach(deposit => {
+                        const date = new Date(deposit.timestamp);
                         const formattedDate = date.toLocaleString();
                         
                         let statusClass = 'badge-pending';
                         let statusText = 'Pending';
                         
-                        if (withdrawal.status === 'approved') {
+                        if (deposit.status === 'approved') {
                             statusClass = 'badge-success';
-                            statusText = 'Completed';
-                        } else if (withdrawal.status === 'rejected') {
+                            statusText = 'Approved';
+                        } else if (deposit.status === 'rejected') {
                             statusClass = 'badge-danger';
                             statusText = 'Rejected';
                         }
@@ -673,113 +412,48 @@
                         historyItem.className = 'history-item';
                         historyItem.innerHTML = `
                             <div>
-                                <div class="history-amount">-${parseFloat(withdrawal.amount).toFixed(2)} USDT</div>
+                                <div class="history-amount">${parseFloat(deposit.amount).toFixed(2)} USDT</div>
                                 <div class="history-date">${formattedDate}</div>
                             </div>
                             <div>
                                 <span class="badge ${statusClass}">${statusText}</span>
                             </div>
                         `;
-                        withdrawHistoryEl.appendChild(historyItem);
+                        depositHistoryEl.appendChild(historyItem);
                     });
                 })
-                .catch((error) => {
-                    console.error("Error loading withdrawal history:", error);
-                    withdrawHistoryEl.innerHTML = '<div class="loading">Error loading withdrawal history</div>';
+                .catch(error => {
+                    console.error("Error loading deposit history:", error);
+                    depositHistoryEl.innerHTML = '<div class="loading">Error loading deposit history</div>';
                 });
         }
 
-        // Setup realtime listener for withdrawal status changes
-        function setupWithdrawalListener(userId) {
-            rdb.ref('withdrawals').orderByChild('userId').equalTo(userId).on('value', (snapshot) => {
-                loadWithdrawalHistory(userId);
+        // Setup realtime listener for deposit status changes
+        function setupDepositListener(userId) {
+            rdb.ref('deposits').orderByChild('userId').equalTo(userId).on('value', (snapshot) => {
+                loadDepositHistory(userId);
             });
         }
 
-        // Submit withdrawal request
-        async function submitWithdrawal() {
-            const amount = parseFloat(withdrawAmountInput.value);
-            const walletAddress = walletAddressInput.value.trim();
-            const code = withdrawCodeInput.value.trim();
-            const user = auth.currentUser;
-            
-            // Validation
-            if (!amount || amount < 15) {
-                showAlert('Minimum withdrawal amount is 15 USDT', 'danger');
-                return;
-            }
-            
-            if (!walletAddress || walletAddress.length < 10) {
-                showAlert('Please enter a valid TRC20 wallet address', 'danger');
-                return;
-            }
-            
-            if (!code || code.length !== 4 || !/^\d+$/.test(code)) {
-                showAlert('Please enter a valid 4-digit withdrawal code', 'danger');
-                return;
-            }
-            
-            if (!user) {
-                window.location.href = 'sign.html';
-                return;
-            }
-            
-            // Verify withdrawal code
-            const isCodeValid = await verifyWithdrawalCode(user.uid, code);
-            if (!isCodeValid) {
-                return;
-            }
-            
-            // Check available balance
-            try {
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                if (!userDoc.exists) {
-                    showAlert('User data not found', 'danger');
-                    return;
-                }
-                
-                const userData = userDoc.data();
-                const availableBalance = userData.taskEarnings || 0;
-                
-                if (amount > availableBalance) {
-                    showAlert('Insufficient balance for this withdrawal', 'danger');
-                    return;
-                }
-                
-                // Disable button during processing
-                submitWithdrawBtn.disabled = true;
-                submitWithdrawBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                
-                // Create withdrawal record in Realtime DB for admin approval
-                await rdb.ref('withdrawals').push({
-                    userId: user.uid,
-                    userEmail: user.email || 'no-email',
-                    amount: amount,
-                    walletAddress: walletAddress,
-                    status: 'pending',
-                    timestamp: Date.now(),
-                    processedAt: null,
-                    processedBy: null
-                });
-                
-                showAlert('Withdrawal request submitted for admin approval!', 'success');
-                
-                // Clear form
-                withdrawAmountInput.value = '';
-                walletAddressInput.value = '';
-                withdrawCodeInput.value = '';
-                
-                // Refresh data
-                loadUserData(user.uid);
-                
-            } catch (error) {
-                console.error('Error submitting withdrawal:', error);
-                showAlert('Error submitting withdrawal. Please try again.', 'danger');
-            } finally {
-                submitWithdrawBtn.disabled = false;
-                submitWithdrawBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
-            }
+        // Copy wallet address
+        function copyWalletAddress() {
+            navigator.clipboard.writeText(walletAddressEl.textContent)
+                .then(() => showAlert('Wallet address copied to clipboard!', 'success'))
+                .catch(() => showAlert('Failed to copy address', 'danger'));
         }
+
+        // Preview image before upload
+        screenshotInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImage.src = event.target.result;
+                    previewImage.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
         // Show alert message
         function showAlert(message, type) {
@@ -796,8 +470,74 @@
             }, 5000);
         }
 
+        // Submit deposit
+        async function submitDeposit() {
+            const amount = parseFloat(depositAmountInput.value);
+            const txHash = transactionHashInput.value.trim();
+            const file = screenshotInput.files[0];
+            const user = auth.currentUser;
+            
+            // Validation
+            if (!amount || amount < 10) {
+                showAlert('Minimum deposit is 10 USDT', 'danger');
+                return;
+            }
+            
+            if (!txHash) {
+                showAlert('Please enter your transaction hash', 'danger');
+                return;
+            }
+            
+            if (!file) {
+                showAlert('Please upload a screenshot proof', 'danger');
+                return;
+            }
+            
+            if (!user) {
+                window.location.href = 'sign.html';
+                return;
+            }
+            
+            try {
+                // Disable button during processing
+                submitDepositBtn.disabled = true;
+                submitDepositBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                
+                // Upload screenshot to Firebase Storage
+                const storageRef = storage.ref(`deposit_proofs/${user.uid}/${Date.now()}_${file.name}`);
+                await storageRef.put(file);
+                const screenshotUrl = await storageRef.getDownloadURL();
+                
+                // Save deposit record to Realtime Database
+                await rdb.ref('deposits').push({
+                    userId: user.uid,
+                    userEmail: user.email || 'no-email',
+                    amount: amount,
+                    transactionHash: txHash,
+                    proofImage: screenshotUrl,
+                    status: 'pending',
+                    timestamp: Date.now()
+                });
+                
+                showAlert('Deposit submitted successfully! It will be processed within 24 hours.', 'success');
+                
+                // Clear form
+                depositAmountInput.value = '';
+                transactionHashInput.value = '';
+                screenshotInput.value = '';
+                previewImage.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error submitting deposit:', error);
+                showAlert('Error submitting deposit. Please try again.', 'danger');
+            } finally {
+                submitDepositBtn.disabled = false;
+                submitDepositBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Deposit';
+            }
+        }
+
         // Event listeners
-        submitWithdrawBtn.addEventListener('click', submitWithdrawal);
+        document.getElementById('submit-deposit').addEventListener('click', submitDeposit);
     </script>
 </body>
 </html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - VideoCall</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .balance-section {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            gap: 10px;
+        }
+        .balance-card {
+            flex: 1;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .deposit-balance {
+            background-color: #28a745;
+        }
+        .earning-balance {
+            background-color: #17a2b8;
+        }
+        .points-balance {
+            background-color: #6f42c1;
+        }
+        .balance-label {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .balance-amount {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .nav-btn {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 80px;
+            justify-content: center;
+        }
+        .nav-btn:hover {
+            background-color: #e9ecef;
+            transform: translateY(-3px);
+        }
+        .nav-btn i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .nav-btn div {
+            font-size: 14px;
+        }
+        .logout-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .logo img {
+            max-width: 120px;
+        }
+        /* Profile dropdown styles */
+        .profile-dropdown {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        .profile-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #6f42c1;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .profile-icon:hover {
+            transform: scale(1.1);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            z-index: 1;
+        }
+        .dropdown-content.show {
+            display: block;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #6f42c1;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        .profile-info {
+            flex: 1;
+        }
+        .profile-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+            font-size: 14px;
+        }
+        .profile-email {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+        .profile-meta {
+            font-size: 11px;
+            color: #6c757d;
+        }
+        .dropdown-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+        }
+        .dropdown-item i {
+            margin-right: 8px;
+            width: 20px;
+            text-align: center;
+        }
+        .dropdown-footer {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <!-- Profile Dropdown -->
+        <div class="profile-dropdown">
+            <div class="profile-icon" id="profileIcon">U</div>
+            <div class="dropdown-content" id="dropdownContent">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">U</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profileName">User Name</div>
+                        <div class="profile-email" id="profileEmail">user@example.com</div>
+                        <div class="profile-meta">Member since: <span id="joinDate">-</span></div>
+                    </div>
+                </div>
+                <div class="dropdown-item">
+                    <i class="fas fa-id-badge"></i>
+                    <div>User ID: <span id="userIdDisplay">-</span></div>
+                </div>
+                <div class="dropdown-item">
+                    <i class="fas fa-coins"></i>
+                    <div>Points: <span id="dropdownPoints">0</span></div>
+                </div>
+                <div class="dropdown-item">
+                    <i class="fas fa-wallet"></i>
+                    <div>Balance: $<span id="dropdownBalance">0.00</span></div>
+                </div>
+                <div class="dropdown-footer">
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Log Out
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="logo">
+            <img src="logo.png" alt="VideoCall">
+        </div>
+        <h1>Dashboard</h1>
+        
+        <div class="balance-section">
+            <div class="balance-card deposit-balance">
+                <div class="balance-label">Deposit Balance</div>
+                <div class="balance-amount" id="deposit-balance">0</div>
+                <div>USDT</div>
+            </div>
+            <div class="balance-card earning-balance">
+                <div class="balance-label">Earnings Balance</div>
+                <div class="balance-amount" id="earning-balance">0</div>
+                <div>USDT</div>
+            </div>
+            <div class="balance-card points-balance">
+                <div class="balance-label">Points Balance</div>
+                <div class="balance-amount" id="points-balance">0</div>
+                <div>Points</div>
+            </div>
+        </div>
+        
+        <!-- 2x3 Grid Navigation -->
+        <div class="nav-grid">
+            <div class="nav-btn" onclick="window.location.href='deposit.html'">
+                <i class="fas fa-money-bill-wave"></i>
+                <div>Deposit</div>
+            </div>
+            <div class="nav-btn" onclick="window.location.href='withdraw.html'">
+                <i class="fas fa-wallet"></i>
+                <div>Withdraw</div>
+            </div>
+            <div class="nav-btn" onclick="window.location.href='referral.html'">
+                <i class="fas fa-share-alt"></i>
+                <div>Referral</div>
+            </div>
+            <div class="nav-btn" onclick="window.location.href='product.html'">
+                <i class="fas fa-gem"></i>
+                <div>Products</div>
+            </div>
+            <div class="nav-btn" onclick="window.location.href='daily.html'">
+                <i class="fas fa-tasks"></i>
+                <div>Daily Tasks</div>
+            </div>
+            <div class="nav-btn" onclick="window.location.href='notifications.html'">
+                <i class="fas fa-bell"></i>
+                <div>Notifications</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAfsKcVP7OUo870TKkBnk4BfDEq9LnAK8",
+            authDomain: "newporoject-c6f66.firebaseapp.com",
+            databaseURL: "https://newporoject-c6f66-default-rtdb.firebaseio.com",
+            projectId: "newporoject-c6f66",
+            storageBucket: "newporoject-c6f66.appspot.com",
+            messagingSenderId: "733557611631",
+            appId: "1:733557611631:web:02c9377f56d614ff3b019a"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'sign.html';
+            } else {
+                loadUserData(user.uid);
+            }
+        });
+
+        // Toggle dropdown
+        document.getElementById('profileIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('dropdownContent').classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function() {
+            const dropdown = document.getElementById('dropdownContent');
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Load user data
+        async function loadUserData(userId) {
+            try {
+                const doc = await db.collection('users').doc(userId).get();
+                if (doc.exists) {
+                    const userData = doc.data();
+                    
+                    // Update profile dropdown
+                    document.getElementById('profileName').textContent = 
+                        `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'User';
+                    document.getElementById('profileEmail').textContent = userData.email || 'No email';
+                    document.getElementById('userIdDisplay').textContent = userId.substring(0, 8) + '...';
+                    document.getElementById('dropdownPoints').textContent = userData.points || 0;
+                    document.getElementById('dropdownBalance').textContent = 
+                        userData.depositBalance ? userData.depositBalance.toFixed(2) : '0.00';
+                    
+                    // Set avatar with first letter of first name or email
+                    const firstLetter = userData.firstName ? 
+                        userData.firstName.charAt(0).toUpperCase() : 
+                        (userData.email ? userData.email.charAt(0).toUpperCase() : 'U');
+                    document.getElementById('profileAvatar').textContent = firstLetter;
+                    document.getElementById('profileIcon').textContent = firstLetter;
+                    
+                    // Format join date
+                    if (userData.createdAt) {
+                        const joinDate = userData.createdAt.toDate();
+                        document.getElementById('joinDate').textContent = joinDate.toLocaleDateString();
+                    }
+                    
+                    // Update all balances
+                    document.getElementById('deposit-balance').textContent = 
+                        userData.depositBalance ? userData.depositBalance.toFixed(2) : '0.00';
+                    document.getElementById('earning-balance').textContent = 
+                        userData.taskEarnings ? userData.taskEarnings.toFixed(2) : '0.00';
+                    document.getElementById('points-balance').textContent = 
+                        userData.points || 0;
+                }
+            } catch (error) {
+                console.error("Error loading user data:", error);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    window.location.href = 'sign.html';
+                })
+                .catch((error) => {
+                    console.error("Logout error:", error);
+                });
+        }
+    </script>
+</body>
+</html>

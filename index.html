@@ -141,7 +141,7 @@
             <input type="email" id="signup-email" placeholder="Email" required>
             <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6">
             <input type="text" id="phone" placeholder="Phone Number (optional)">
-            <input type="text" id="admin-uid" placeholder="Admin UID (optional)">
+            <input type="text" id="userr-uid" placeholder="Admin UID (optional)">
             <input type="hidden" id="referral-code-input">
             
             <div class="captcha-container">
@@ -193,7 +193,7 @@
             const refCode = urlParams.get('ref');
             
             if (refCode) {
-                document.getElementById('referral-code-input').value = refCode;
+                document.getElementById('userr-uid').value = refCode;
                 document.getElementById('referral-code-display').textContent = refCode;
                 document.getElementById('referral-notice').style.display = 'block';
             }

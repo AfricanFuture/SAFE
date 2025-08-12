@@ -2,39 +2,41 @@
 <html>
 <head>
     <title>Dashboard - SAFE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f4f4f4;
+            font-size: 18px; /* Increased base font size */
         }
-        .containern {
-            max-width: 600px;
+        .container {
+            max-width: 800px; /* Increased container width */
             margin: 0 auto;
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px; /* Increased padding */
+            border-radius: 12px; /* Larger border radius */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* Stronger shadow */
             position: relative;
         }
         h1 {
             color: #333;
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 30px; /* Increased margin */
+            font-size: 32px; /* Larger heading */
         }
         .balance-section {
             display: flex;
             justify-content: space-between;
-            margin: 20px 0;
-            gap: 10px;
+            margin: 30px 0; /* Increased margin */
+            gap: 15px; /* Increased gap */
         }
         .balance-card {
             flex: 1;
             color: white;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 20px; /* Increased padding */
+            border-radius: 12px; /* Larger border radius */
             text-align: center;
         }
         .deposit-balance {
@@ -47,83 +49,90 @@
             background-color: #6f42c1;
         }
         .balance-label {
-            font-size: 12px;
-            margin-bottom: 5px;
+            font-size: 18px; /* Larger label */
+            margin-bottom: 10px; /* Increased margin */
         }
         .balance-amount {
-            font-size: 18px;
+            font-size: 28px; /* Much larger amount */
             font-weight: bold;
-            margin: 5px 0;
+            margin: 10px 0; /* Increased margin */
         }
         .nav-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 20px 0;
+            gap: 15px; /* Increased gap */
+            margin: 30px 0; /* Increased margin */
         }
         .nav-btn {
-            padding: 12px;
+            padding: 20px; /* Increased padding */
             background-color: #f8f9fa;
-            border-radius: 8px;
+            border-radius: 12px; /* Larger border radius */
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 80px;
+            min-height: 120px; /* Taller buttons */
             justify-content: center;
+            border: 1px solid #ddd; /* Added border */
         }
         .nav-btn:hover {
             background-color: #e9ecef;
-            transform: translateY(-3px);
+            transform: translateY(-5px); /* More pronounced hover effect */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Added shadow on hover */
         }
         .nav-btn i {
-            font-size: 24px;
-            margin-bottom: 8px;
+            font-size: 36px; /* Larger icons */
+            margin-bottom: 15px; /* Increased margin */
         }
         .nav-btn div {
-            font-size: 14px;
+            font-size: 18px; /* Larger text */
+            font-weight: bold; /* Bolder text */
         }
         .logout-btn {
             display: block;
             width: 100%;
-            padding: 10px;
+            padding: 15px; /* Increased padding */
             background-color: #dc3545;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px; /* Larger border radius */
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 25px; /* Increased margin */
+            font-size: 18px; /* Larger text */
+            font-weight: bold; /* Bolder text */
         }
         .logout-btn:hover {
             background-color: #c82333;
         }
         .logo {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 25px; /* Increased margin */
         }
         .logo img {
-            max-width: 120px;
+            max-width: 180px; /* Larger logo */
         }
         /* Profile dropdown styles */
         .profile-dropdown {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 25px; /* Adjusted position */
+            right: 25px; /* Adjusted position */
         }
         .profile-icon {
-            width: 36px;
-            height: 36px;
+            width: 50px; /* Larger icon */
+            height: 50px; /* Larger icon */
             border-radius: 50%;
             background-color: #6f42c1;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 24px; /* Larger text */
             cursor: pointer;
             transition: all 0.3s;
+            border: 2px solid white; /* Added border */
+            box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Added shadow */
         }
         .profile-icon:hover {
             transform: scale(1.1);
@@ -133,10 +142,10 @@
             position: absolute;
             right: 0;
             background-color: #fff;
-            min-width: 220px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            padding: 12px;
+            min-width: 280px; /* Wider dropdown */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Stronger shadow */
+            border-radius: 12px; /* Larger border radius */
+            padding: 20px; /* Increased padding */
             z-index: 1;
         }
         .dropdown-content.show {
@@ -145,55 +154,69 @@
         .profile-header {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
+            margin-bottom: 15px; /* Increased margin */
+            padding-bottom: 15px; /* Increased padding */
             border-bottom: 1px solid #eee;
         }
         .profile-avatar {
-            width: 40px;
-            height: 40px;
+            width: 50px; /* Larger avatar */
+            height: 50px; /* Larger avatar */
             border-radius: 50%;
             background-color: #6f42c1;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            margin-right: 12px;
+            font-size: 24px; /* Larger text */
+            margin-right: 15px; /* Increased margin */
         }
         .profile-info {
             flex: 1;
         }
         .profile-name {
             font-weight: bold;
-            margin-bottom: 2px;
-            font-size: 14px;
+            margin-bottom: 5px; /* Increased margin */
+            font-size: 18px; /* Larger text */
         }
         .profile-email {
-            font-size: 12px;
+            font-size: 16px; /* Larger text */
             color: #6c757d;
-            margin-bottom: 4px;
+            margin-bottom: 5px; /* Increased margin */
         }
         .profile-meta {
-            font-size: 11px;
+            font-size: 14px; /* Larger text */
             color: #6c757d;
         }
         .dropdown-item {
-            padding: 8px 0;
+            padding: 12px 0; /* Increased padding */
             border-bottom: 1px solid #f8f9fa;
             display: flex;
             align-items: center;
-            font-size: 13px;
+            font-size: 16px; /* Larger text */
         }
         .dropdown-item i {
-            margin-right: 8px;
-            width: 20px;
+            margin-right: 12px; /* Increased margin */
+            width: 25px; /* Larger icon space */
             text-align: center;
+            font-size: 18px; /* Larger icons */
         }
         .dropdown-footer {
-            margin-top: 12px;
-            padding-top: 12px;
+            margin-top: 15px; /* Increased margin */
+            padding-top: 15px; /* Increased padding */
             border-top: 1px solid #eee;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            .balance-section {
+                flex-direction: column;
+            }
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">

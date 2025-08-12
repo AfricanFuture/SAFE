@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Signup/Login - SAFE</title>
+    <title>Signup/Login - VideoCall</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -15,30 +15,22 @@
         .container {
             background-color: #fff;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             width: 350px;
-            transition: transform 0.3s ease;
-        }
-        .container.loading {
-            transform: scale(0.98);
-            filter: blur(1px);
+            position: relative;
         }
         .tab-container {
             display: flex;
             margin-bottom: 20px;
-            border-radius: 6px;
-            overflow: hidden;
         }
         .tab {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             cursor: pointer;
             background: #f0f0f0;
             border: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
         }
         .tab.active {
             background: #007bff;
@@ -46,66 +38,44 @@
         }
         .form-container {
             display: none;
-            animation: fadeIn 0.4s ease;
         }
         .form-container.active {
             display: block;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
         input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             margin: 8px 0;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 4px;
             box-sizing: border-box;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        input:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
         }
         button {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             margin-top: 10px;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.3s ease;
         }
         button:hover {
-            background-color: #0069d9;
-            transform: translateY(-1px);
-        }
-        button:active {
-            transform: translateY(0);
+            background-color: #0056b3;
         }
         #message, #login-message {
             margin: 15px 0;
-            padding: 12px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 4px;
             text-align: center;
-            font-size: 14px;
         }
         .success {
             background-color: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
         }
         .error {
             background-color: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
         }
         .name-fields {
             display: flex;
@@ -123,12 +93,11 @@
         .captcha-challenge {
             font-size: 18px;
             font-weight: bold;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
             min-width: 80px;
             text-align: center;
-            border: 1px solid #ddd;
         }
         #captcha-input {
             flex: 1;
@@ -138,51 +107,31 @@
             border: none;
             color: #007bff;
             cursor: pointer;
-            font-size: 20px;
-            transition: transform 0.3s ease;
+            font-size: 18px;
         }
-        .refresh-captcha:hover {
-            transform: rotate(90deg);
-        }
-        
-        /* Enhanced Loading overlay styles */
-        .loading-overlay {
+        /* Loading Dialog Styles */
+        .loading-dialog {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(3px);
-        }
-        .loading-overlay.active {
-            opacity: 1;
-            visibility: visible;
         }
         .loading-content {
-            background: white;
+            background-color: white;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
             text-align: center;
             max-width: 300px;
-            width: 100%;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
         }
-        .loading-overlay.active .loading-content {
-            transform: translateY(0);
-        }
-        .loading-spinner {
-            border: 4px solid rgba(0, 123, 255, 0.2);
-            border-top: 4px solid #007bff;
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -193,41 +142,19 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .loading-text {
-            color: #333;
-            margin-top: 15px;
-            font-size: 16px;
-            font-weight: 500;
-        }
-        .progress-bar {
-            height: 4px;
-            background: #e9ecef;
-            border-radius: 2px;
-            margin-top: 20px;
-            overflow: hidden;
-        }
-        .progress {
-            height: 100%;
-            background: #007bff;
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 2px;
-        }
     </style>
 </head>
 <body>
-    <!-- Enhanced Loading overlay -->
-    <div class="loading-overlay" id="loading-overlay">
+    <!-- Loading Dialog -->
+    <div class="loading-dialog" id="loadingDialog">
         <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <div class="loading-text" id="loading-text">Processing your request</div>
-            <div class="progress-bar">
-                <div class="progress" id="loading-progress"></div>
-            </div>
+            <div class="spinner"></div>
+            <h3>Creating your account...</h3>
+            <p>Please wait while we set up your account.</p>
         </div>
     </div>
-    
-    <div class="container" id="main-container">
+
+    <div class="container">
         <div class="tab-container">
             <button class="tab active" onclick="openTab('signup')">Sign Up</button>
             <button class="tab" onclick="openTab('login')">Login</button>
@@ -245,7 +172,7 @@
             <input type="email" id="signup-email" placeholder="Email" required>
             <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6">
             <input type="text" id="phone" placeholder="Phone Number (optional)">
-            <input type="text" id="userr-uid" placeholder="Admin UID (optional)">
+            <input type="text" id="admin-uid" placeholder="Admin UID (optional)">
             
             <div class="captcha-container">
                 <div class="captcha-challenge" id="captcha-challenge"></div>
@@ -253,7 +180,7 @@
                 <input type="text" id="captcha-input" placeholder="Enter the answer" required>
             </div>
             
-            <button id="signup-button" onclick="signUp()">Sign Up</button>
+            <button onclick="signUp()">Sign Up</button>
         </div>
 
         <div id="login-form" class="form-container">
@@ -261,7 +188,7 @@
             <div id="login-message"></div>
             <input type="email" id="login-email" placeholder="Email" required>
             <input type="password" id="login-password" placeholder="Password" required>
-            <button id="login-button" onclick="login()">Login</button>
+            <button onclick="login()">Login</button>
         </div>
     </div>
 
@@ -286,65 +213,7 @@
         const auth = firebase.auth();
         const rdb = firebase.database();
         const db = firebase.firestore();
-        
-        // Check for referral code in URL
-        function checkForReferralCode() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const refCode = urlParams.get('ref');
-            
-            if (refCode) {
-                document.getElementById('userr-uid').value = refCode;
-            }
-        }
-        
-        // Enhanced loading state functions
-        function showLoading(message = 'Processing your request') {
-            const overlay = document.getElementById('loading-overlay');
-            const container = document.getElementById('main-container');
-            const progress = document.getElementById('loading-progress');
-            
-            document.getElementById('loading-text').textContent = message;
-            overlay.classList.add('active');
-            container.classList.add('loading');
-            
-            // Animate progress bar
-            let width = 0;
-            const interval = setInterval(() => {
-                if (width >= 90) {
-                    clearInterval(interval);
-                } else {
-                    width += 5;
-                    progress.style.width = width + '%';
-                }
-            }, 300);
-            
-            // Disable buttons
-            document.getElementById('signup-button').disabled = true;
-            document.getElementById('login-button').disabled = true;
-            
-            return interval;
-        }
-        
-        function hideLoading(interval) {
-            const overlay = document.getElementById('loading-overlay');
-            const container = document.getElementById('main-container');
-            const progress = document.getElementById('loading-progress');
-            
-            // Complete progress bar animation
-            progress.style.width = '100%';
-            clearInterval(interval);
-            
-            setTimeout(() => {
-                overlay.classList.remove('active');
-                container.classList.remove('loading');
-                progress.style.width = '0%';
-                
-                // Enable buttons
-                document.getElementById('signup-button').disabled = false;
-                document.getElementById('login-button').disabled = false;
-            }, 500);
-        }
-        
+
         // CAPTCHA variables
         let captchaAnswer;
         
@@ -365,7 +234,7 @@
             document.getElementById('captcha-challenge').textContent = challenge;
             captchaAnswer = answer;
         }
-    
+        
         // Generate CAPTCHA on page load
         generateCaptcha();
 
@@ -387,6 +256,16 @@
             return result;
         }
 
+        // Show loading dialog
+        function showLoading() {
+            document.getElementById('loadingDialog').style.display = 'flex';
+        }
+
+        // Hide loading dialog
+        function hideLoading() {
+            document.getElementById('loadingDialog').style.display = 'none';
+        }
+
         // Sign up function
         async function signUp() {
             const firstName = document.getElementById('first-name').value;
@@ -394,7 +273,7 @@
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const phone = document.getElementById('phone').value;
-            const adminUid = document.getElementById('userr-uid').value;
+            const adminUid = document.getElementById('admin-uid').value;
             const userCaptchaInput = document.getElementById('captcha-input').value;
             
             // Validate CAPTCHA
@@ -405,8 +284,8 @@
                 return;
             }
 
-            const loadingInterval = showLoading('Creating your account...');
-            
+            showLoading();
+
             try {
                 // Create user
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -432,7 +311,7 @@
                 // Save user data to Firestore
                 await db.collection('users').doc(user.uid).set(userData);
                 
-                // Save basic user data to RTDB
+                // Save basic user data to RTDB (for real-time features if needed)
                 await rdb.ref('users/' + user.uid).set({
                     email: email,
                     firstName: firstName,
@@ -460,7 +339,7 @@
             } catch (error) {
                 showMessage(error.message, 'error');
             } finally {
-                hideLoading(loadingInterval);
+                hideLoading();
                 generateCaptcha();
                 document.getElementById('captcha-input').value = '';
             }
@@ -471,8 +350,6 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
-            const loadingInterval = showLoading('Authenticating...');
-            
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
@@ -491,8 +368,6 @@
                 setTimeout(() => window.location.href = 'home.html', 1500);
             } catch (error) {
                 showLoginMessage(error.message, 'error');
-            } finally {
-                hideLoading(loadingInterval);
             }
         }
 
@@ -508,15 +383,13 @@
             msgDiv.textContent = message;
             msgDiv.className = type;
         }
-// Check auth state
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        window.location.href = 'home.html';
-    }
-});
-        
-        // Check for referral code on page load
-        window.onload = checkForReferralCode;
+
+        // Check auth state
+        auth.onAuthStateChanged((user) => {
+            if (user && user.emailVerified) {
+                window.location.href = 'home.html';
+            }
+        });
     </script>
 </body>
 </html>

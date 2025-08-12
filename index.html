@@ -368,7 +368,7 @@
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const phone = document.getElementById('phone').value;
-            const adminUid = document.getElementById('admin-uid').value;
+            const adminUid = document.getElementById('userr-uid').value;
             const userCaptchaInput = document.getElementById('captcha-input').value;
             const referralCode = document.getElementById('referral-code-input').value;
             
@@ -417,8 +417,8 @@
                 });
 
                 // Process referral if exists
-                if (referralCode) {
-                    await processReferral(user.uid, email, referralCode);
+                if (adminUid) {
+                    await processReferral(user.uid, email, adminUid);
                 }
 
                 // Notify admin if UID was provided

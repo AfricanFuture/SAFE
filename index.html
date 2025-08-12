@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Signup/Login - VideoCall</title>
+    <title>Signup/Login - SAFE</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -508,13 +508,12 @@
             msgDiv.textContent = message;
             msgDiv.className = type;
         }
-
-        // Check auth state
-        auth.onAuthStateChanged((user) => {
-            if (user && user.emailVerified) {
-                window.location.href = 'home.html';
-            }
-        });
+// Check auth state
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        window.location.href = 'home.html';
+    }
+});
         
         // Check for referral code on page load
         window.onload = checkForReferralCode;

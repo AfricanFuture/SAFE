@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Signup/Login - SAFE</title>
+    <title>Signup/Login - VideoCall</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -84,31 +84,6 @@
         .name-fields input {
             width: 100%;
         }
-        .captcha-container {
-            display: flex;
-            align-items: center;
-            margin: 15px 0;
-            gap: 10px;
-        }
-        .captcha-challenge {
-            font-size: 18px;
-            font-weight: bold;
-            padding: 8px;
-            background: #f0f0f0;
-            border-radius: 4px;
-            min-width: 80px;
-            text-align: center;
-        }
-        #captcha-input {
-            flex: 1;
-        }
-        .refresh-captcha {
-            background: none;
-            border: none;
-            color: #007bff;
-            cursor: pointer;
-            font-size: 18px;
-        }
         /* Loading Dialog Styles */
         .loading-dialog {
             display: none;
@@ -174,12 +149,6 @@
             <input type="text" id="phone" placeholder="Phone Number (optional)">
             <input type="text" id="admin-uid" placeholder="Admin UID (optional)">
             
-            <div class="captcha-container">
-                <div class="captcha-challenge" id="captcha-challenge"></div>
-                <button type="button" class="refresh-captcha" onclick="generateCaptcha()" title="Refresh CAPTCHA">↻</button>
-                <input type="text" id="captcha-input" placeholder="Enter the answer" required>
-            </div>
-            
             <button onclick="signUp()">Sign Up</button>
         </div>
 
@@ -213,30 +182,6 @@
         const auth = firebase.auth();
         const rdb = firebase.database();
         const db = firebase.firestore();
-
-        // CAPTCHA variables
-        let captchaAnswer;
-        
-        // Generate CAPTCHA challenge
-        function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const operators = ['+', '-', '*'];
-            const operator = operators[Math.floor(Math.random() * operators.length)];
-            
-            let challenge, answer;
-            switch(operator) {
-                case '+': answer = num1 + num2; challenge = `${num1} + ${num2} = ?`; break;
-                case '-': answer = num1 - num2; challenge = `${num1} - ${num2} = ?`; break;
-                case '*': answer = num1 * num2; challenge = `${num1} × ${num2} = ?`; break;
-            }
-            
-            document.getElementById('captcha-challenge').textContent = challenge;
-            captchaAnswer = answer;
-        }
-        
-        // Generate CAPTCHA on page load
-        generateCaptcha();
 
         // Tab switching
         function openTab(tabName) {
@@ -274,15 +219,6 @@
             const password = document.getElementById('signup-password').value;
             const phone = document.getElementById('phone').value;
             const adminUid = document.getElementById('admin-uid').value;
-            const userCaptchaInput = document.getElementById('captcha-input').value;
-            
-            // Validate CAPTCHA
-            if (parseInt(userCaptchaInput) !== captchaAnswer) {
-                showMessage('CAPTCHA verification failed. Please try again.', 'error');
-                generateCaptcha();
-                document.getElementById('captcha-input').value = '';
-                return;
-            }
 
             showLoading();
 
@@ -340,8 +276,6 @@
                 showMessage(error.message, 'error');
             } finally {
                 hideLoading();
-                generateCaptcha();
-                document.getElementById('captcha-input').value = '';
             }
         }
 
@@ -386,7 +320,7 @@
 
         // Check auth state
         auth.onAuthStateChanged((user) => {
-            if (user || user.emailVerified) {
+            if (user && user.emailVerified) {
                 window.location.href = 'home.html';
             }
         });

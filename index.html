@@ -114,36 +114,6 @@
         .name-fields input {
             width: 100%;
         }
-        .captcha-container {
-            display: flex;
-            align-items: center;
-            margin: 15px 0;
-            gap: 10px;
-        }
-        .captcha-challenge {
-            font-size: 18px;
-            font-weight: bold;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            min-width: 80px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-        #captcha-input {
-            flex: 1;
-        }
-        .refresh-captcha {
-            background: none;
-            border: none;
-            color: #007bff;
-            cursor: pointer;
-            font-size: 20px;
-            transition: transform 0.3s ease;
-        }
-        .refresh-captcha:hover {
-            transform: rotate(90deg);
-        }
         
         /* Enhanced Loading overlay styles */
         .loading-overlay {
@@ -247,12 +217,6 @@
             <input type="text" id="tel" placeholder="Phone Number (optional)">
             <input type="text" id="userr-uid" placeholder="Ref Code (optional)">
             
-            <div class="captcha-container">
-                <div class="captcha-challenge" id="captcha-challenge"></div>
-                <button type="button" class="refresh-captcha" onclick="generateCaptcha()" title="Refresh CAPTCHA">↻</button>
-                <input type="number" id="captcha-input" placeholder="Enter the answer" required>
-            </div>
-            
             <button id="signup-button" onclick="signUp()">Sign Up</button>
         </div>
 
@@ -344,30 +308,6 @@
                 document.getElementById('login-button').disabled = false;
             }, 500);
         }
-        
-        // CAPTCHA variables
-        let captchaAnswer;
-        
-        // Generate CAPTCHA challenge
-        function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const operators = ['+','*'];
-            const operator = operators[Math.floor(Math.random() * operators.length)];
-            
-            let challenge, answer;
-            switch(operator) {
-                case '+': answer = num1 + num2; challenge = `${num1} + ${num2} = ?`; break;
-                
-                case '*': answer = num1 * num2; challenge = `${num1} × ${num2} = ?`; break;
-            }
-            
-            document.getElementById('captcha-challenge').textContent = challenge;
-            captchaAnswer = answer;
-        }
-    
-        // Generate CAPTCHA on page load
-        generateCaptcha();
 
         // Tab switching
         function openTab(tabName) {
@@ -393,17 +333,8 @@
             const lastName = document.getElementById('last-name').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
-            const phone = document.getElementById('phone').value;
+            const phone = document.getElementById('tel').value;
             const adminUid = document.getElementById('userr-uid').value;
-            const userCaptchaInput = document.getElementById('captcha-input').value;
-            
-            // Validate CAPTCHA
-            if (parseInt(userCaptchaInput) !== captchaAnswer) {
-                showMessage('CAPTCHA verification failed. Please try again.', 'error');
-                generateCaptcha();
-                document.getElementById('captcha-input').value = '';
-                return;
-            }
 
             const loadingInterval = showLoading('Creating your account...');
             
@@ -452,17 +383,13 @@
                     });
                 }
 
-                // Send verification email
-                await user.sendEmailVerification();
-                showMessage('Account created! Check your email for verification.', 'success');
-                setTimeout(() => window.location.href = 'home.html', 3000);
+                showMessage('Account created successfully! Redirecting...', 'success');
+                setTimeout(() => window.location.href = 'home.html', 1500);
                 
             } catch (error) {
                 showMessage(error.message, 'error');
             } finally {
                 hideLoading(loadingInterval);
-                generateCaptcha();
-                document.getElementById('captcha-input').value = '';
             }
         }
 
@@ -508,12 +435,13 @@
             msgDiv.textContent = message;
             msgDiv.className = type;
         }
-// Check auth state
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        window.location.href = 'home.html';
-    }
-});
+
+        // Check auth state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = 'home.html';
+            }
+        });
         
         // Check for referral code on page load
         window.onload = checkForReferralCode;

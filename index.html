@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Signup/Login - SAFE</title>
+    <title>Signup/Login - VideoCall</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,7 +18,6 @@
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             width: 350px;
-            position: relative;
         }
         .tab-container {
             display: flex;
@@ -62,10 +61,6 @@
         }
         button:hover {
             background-color: #0056b3;
-        }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
         }
         #message, #login-message {
             margin: 15px 0;
@@ -122,38 +117,6 @@
             align-items: center;
             gap: 10px;
         }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
-        }
-        .loading-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #007bff;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
@@ -185,7 +148,7 @@
                 </div>
             </div>
             
-            <button id="signup-button" onclick="signUp()">Sign Up</button>
+            <button onclick="signUp()">Sign Up</button>
         </div>
 
         <div id="login-form" class="form-container">
@@ -193,14 +156,7 @@
             <div id="login-message"></div>
             <input type="email" id="login-email" placeholder="Email" required>
             <input type="password" id="login-password" placeholder="Password" required>
-            <button id="login-button" onclick="login()">Login</button>
-        </div>
-    </div>
-
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3 id="loading-message">Processing your request...</h3>
+            <button onclick="login()">Login</button>
         </div>
     </div>
 
@@ -231,15 +187,15 @@
         
         // CAPTCHA patterns from the image
         const captchaPatterns = [
-            "TKSSP",
-            "BATSES",
-            "AMSBRAWSICH",
-            "WESCX",
-            "NBCGHT",
-            "XEWDN",
+            "LEBA",
+            "IMEL",
+            "ERF",
+            "MUSTIF",
+            "M4C5",
+            "7ONOG",
             "IDIOTH",
-            "ANVSA",
-            "GABER"
+            "UOY",
+            "KCUF"
         ];
         
         // Generate CAPTCHA challenge
@@ -251,21 +207,6 @@
         
         // Generate CAPTCHA on page load
         generateCaptcha();
-
-        // Show loading overlay
-        function showLoading(message = 'Processing your request...') {
-            document.getElementById('loading-message').textContent = message;
-            document.getElementById('loading-overlay').style.display = 'flex';
-            document.getElementById('signup-button').disabled = true;
-            document.getElementById('login-button').disabled = true;
-        }
-
-        // Hide loading overlay
-        function hideLoading() {
-            document.getElementById('loading-overlay').style.display = 'none';
-            document.getElementById('signup-button').disabled = false;
-            document.getElementById('login-button').disabled = false;
-        }
 
         // Tab switching
         function openTab(tabName) {
@@ -287,12 +228,12 @@
 
         // Sign up function
         async function signUp() {
-            const firstName = document.getElementById('first-name').value.trim();
-            const lastName = document.getElementById('last-name').value.trim();
-            const email = document.getElementById('signup-email').value.trim();
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
-            const phone = document.getElementById('phone').value.trim();
-            const adminUid = document.getElementById('admin-uid').value.trim();
+            const phone = document.getElementById('phone').value;
+            const adminUid = document.getElementById('admin-uid').value;
             const userCaptchaInput = document.getElementById('captcha-input').value.trim();
             
             // Validate CAPTCHA
@@ -302,8 +243,6 @@
                 document.getElementById('captcha-input').value = '';
                 return;
             }
-
-            showLoading('Creating your account...');
 
             try {
                 // Create user
@@ -324,30 +263,23 @@
                     depositBalance: 0,
                     taskEarnings: 0,
                     points: 0,
-                    lastLogin: null,
-                    emailVerified: false // Track verification status manually
+                    lastLogin: null
                 };
 
-                // First save to Firestore (more reliable for complex data)
-                showLoading('Saving your data to database...');
-                const firestorePromise = db.collection('users').doc(user.uid).set(userData);
+                // Save user data to Firestore
+                await db.collection('users').doc(user.uid).set(userData);
                 
-                // Then save to RTDB (for real-time features)
-                const rtdbPromise = rdb.ref('users/' + user.uid).set({
+                // Save basic user data to RTDB (for real-time features if needed)
+                await rdb.ref('users/' + user.uid).set({
                     email: email,
                     firstName: firstName,
                     lastName: lastName,
                     status: 'active',
-                    lastLogin: null,
-                    emailVerified: false
+                    lastLogin: null
                 });
-
-                // Wait for both writes to complete
-                await Promise.all([firestorePromise, rtdbPromise]);
 
                 // Notify admin if UID was provided
                 if (adminUid) {
-                    showLoading('Notifying administrator...');
                     await rdb.ref('admin_notifications/' + adminUid).push({
                         type: 'new_signup',
                         email: email,
@@ -357,32 +289,14 @@
                     });
                 }
 
-                showMessage('Account created successfully!', 'success');
-                setTimeout(() => window.location.href = 'home.html', 1500);
+                // Send verification email
+                await user.sendEmailVerification();
+                showMessage('Account created! Check your email for verification.', 'success');
+                setTimeout(() => window.location.href = 'home.html', 3000);
                 
             } catch (error) {
-                console.error('Signup error:', error);
-                
-                // Handle specific errors
-                let errorMessage = error.message;
-                if (error.code === 'auth/email-already-in-use') {
-                    errorMessage = 'This email is already registered. Please login instead.';
-                } else if (error.code === 'auth/weak-password') {
-                    errorMessage = 'Password should be at least 6 characters';
-                }
-                
-                showMessage(errorMessage, 'error');
-                
-                // Clean up if user was created but data saving failed
-                if (auth.currentUser) {
-                    try {
-                        await auth.currentUser.delete();
-                    } catch (deleteError) {
-                        console.error('Error cleaning up user:', deleteError);
-                    }
-                }
+                showMessage(error.message, 'error');
             } finally {
-                hideLoading();
                 generateCaptcha();
                 document.getElementById('captcha-input').value = '';
             }
@@ -390,10 +304,8 @@
 
         // Login function
         async function login() {
-            const email = document.getElementById('login-email').value.trim();
+            const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-
-            showLoading('Authenticating...');
 
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
@@ -401,34 +313,18 @@
                 const now = new Date();
                 
                 // Update last login time in both Firestore and RTDB
-                showLoading('Updating your session...');
-                const firestorePromise = db.collection('users').doc(user.uid).update({
+                await db.collection('users').doc(user.uid).update({
                     lastLogin: firebase.firestore.Timestamp.fromDate(now)
                 });
                 
-                const rtdbPromise = rdb.ref('users/' + user.uid).update({
+                await rdb.ref('users/' + user.uid).update({
                     lastLogin: Date.now()
                 });
-
-                await Promise.all([firestorePromise, rtdbPromise]);
                 
                 showLoginMessage('Login successful! Redirecting...', 'success');
                 setTimeout(() => window.location.href = 'home.html', 1500);
             } catch (error) {
-                console.error('Login error:', error);
-                
-                let errorMessage = error.message;
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'No account found with this email';
-                } else if (error.code === 'auth/wrong-password') {
-                    errorMessage = 'Incorrect password';
-                } else if (error.code === 'auth/too-many-requests') {
-                    errorMessage = 'Too many attempts. Please try again later.';
-                }
-                
-                showLoginMessage(errorMessage, 'error');
-            } finally {
-                hideLoading();
+                showLoginMessage(error.message, 'error');
             }
         }
 
@@ -448,7 +344,6 @@
         // Check auth state
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // No longer checking email verification
                 window.location.href = 'home.html';
             }
         });

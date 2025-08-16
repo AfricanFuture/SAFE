@@ -85,21 +85,24 @@
         }
         .captcha-container {
             display: flex;
+            flex-direction: column;
             align-items: center;
             margin: 15px 0;
             gap: 10px;
         }
-        .captcha-challenge {
+        .captcha-image {
+            font-family: monospace;
             font-size: 18px;
             font-weight: bold;
             padding: 8px;
             background: #f0f0f0;
             border-radius: 4px;
-            min-width: 80px;
             text-align: center;
+            letter-spacing: 2px;
+            line-height: 1.5;
         }
         #captcha-input {
-            flex: 1;
+            width: 100%;
         }
         .refresh-captcha {
             background: none;
@@ -107,6 +110,12 @@
             color: #007bff;
             cursor: pointer;
             font-size: 18px;
+        }
+        .captcha-input-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
     </style>
 </head>
@@ -132,9 +141,11 @@
             <input type="text" id="admin-uid" placeholder="Admin UID (optional)">
             
             <div class="captcha-container">
-                <div class="captcha-challenge" id="captcha-challenge"></div>
-                <button type="button" class="refresh-captcha" onclick="generateCaptcha()" title="Refresh CAPTCHA">↻</button>
-                <input type="text" id="captcha-input" placeholder="Enter the answer" required>
+                <div class="captcha-image" id="captcha-challenge"></div>
+                <div class="captcha-input-container">
+                    <input type="text" id="captcha-input" placeholder="Enter the text above" required>
+                    <button type="button" class="refresh-captcha" onclick="generateCaptcha()" title="Refresh CAPTCHA">↻</button>
+                </div>
             </div>
             
             <button onclick="signUp()">Sign Up</button>
@@ -174,22 +185,24 @@
         // CAPTCHA variables
         let captchaAnswer;
         
+        // CAPTCHA patterns from the image
+        const captchaPatterns = [
+            "TKSSP",
+            "BATSES",
+            "AMSBRAWSICH",
+            "WESCX",
+            "NBCGHT",
+            "XEWDN",
+            "IDIOTH",
+            "ANVSA",
+            "GABER"
+        ];
+        
         // Generate CAPTCHA challenge
         function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const operators = ['+', '-', '*'];
-            const operator = operators[Math.floor(Math.random() * operators.length)];
-            
-            let challenge, answer;
-            switch(operator) {
-                case '+': answer = num1 + num2; challenge = `${num1} + ${num2} = ?`; break;
-                case '-': answer = num1 - num2; challenge = `${num1} - ${num2} = ?`; break;
-                case '*': answer = num1 * num2; challenge = `${num1} × ${num2} = ?`; break;
-            }
-            
-            document.getElementById('captcha-challenge').textContent = challenge;
-            captchaAnswer = answer;
+            const randomIndex = Math.floor(Math.random() * captchaPatterns.length);
+            captchaAnswer = captchaPatterns[randomIndex];
+            document.getElementById('captcha-challenge').textContent = captchaAnswer;
         }
         
         // Generate CAPTCHA on page load
@@ -221,10 +234,10 @@
             const password = document.getElementById('signup-password').value;
             const phone = document.getElementById('phone').value;
             const adminUid = document.getElementById('admin-uid').value;
-            const userCaptchaInput = document.getElementById('captcha-input').value;
+            const userCaptchaInput = document.getElementById('captcha-input').value.trim();
             
             // Validate CAPTCHA
-            if (parseInt(userCaptchaInput) !== captchaAnswer) {
+            if (userCaptchaInput.toUpperCase() !== captchaAnswer) {
                 showMessage('CAPTCHA verification failed. Please try again.', 'error');
                 generateCaptcha();
                 document.getElementById('captcha-input').value = '';
@@ -330,11 +343,10 @@
 
         // Check auth state
         auth.onAuthStateChanged((user) => {
-            if (user || user.emailVerified) {
+            if (user) {
                 window.location.href = 'home.html';
             }
         });
     </script>
 </body>
 </html>
-                        

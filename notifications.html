@@ -96,39 +96,9 @@
             font-size: 0.9em;
             color: #555;
         }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
-        }
-        .loading-spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
-    <!-- Loading overlay -->
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-spinner"></div>
-    </div>
-
     <div class="container">
         <h1>Referral Notifications</h1>
         <div id="current-user" class="current-user"></div>
@@ -160,16 +130,6 @@
         const db = firebase.firestore();
         let currentAdminUid = null;
 
-        // Show loading spinner
-        function showLoading() {
-            document.getElementById('loading-overlay').style.display = 'flex';
-        }
-
-        // Hide loading spinner
-        function hideLoading() {
-            document.getElementById('loading-overlay').style.display = 'none';
-        }
-
         // Check auth state
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -186,14 +146,12 @@
 
         // Load notifications
         function loadNotifications(adminUid) {
-            showLoading();
             const container = document.getElementById('notifications-container');
             
             // Listen for notifications in admin_notifications path
-            rdb.ref('admin_notifications/' + adminUid).orderByChild('timestamp').on('value', async (snapshot) => {
+            rdb.ref('admin_notifications/' + adminUid).orderByChild('timestamp').on('value', (snapshot) => {
                 if (!snapshot.exists()) {
                     container.innerHTML = '<div class="no-notifications">No notifications yet</div>';
-                    hideLoading();
                     return;
                 }
 
@@ -209,60 +167,38 @@
                 notificationList.sort((a, b) => b.timestamp - a.timestamp);
                 
                 container.innerHTML = '';
-                
-                // Process each notification
-                for (const notif of notificationList) {
+                notificationList.forEach(notif => {
                     const div = document.createElement('div');
                     div.className = `notification ${notif.read ? '' : 'unread'}`;
                     const date = new Date(notif.timestamp);
                     
-                    // Get user details from Firestore
-                    let userDetails = {};
-                    try {
-                        const userDoc = await db.collection('users').doc(notif.userId).get();
-                        if (userDoc.exists) {
-                            userDetails = userDoc.data();
-                        }
-                    } catch (error) {
-                        console.error("Error fetching user details:", error);
-                    }
-                    
                     // Check if this referred user has purchased any packages
-                    const hasPurchased = await checkUserPurchases(notif.userId);
-                    const firstPurchase = await getFirstPurchase(notif.userId);
-                    
-                    const status = notif.claimed ? 'claimed' : (hasPurchased ? 'pending' : 'unclaimed');
-                    const purchaseInfo = firstPurchase ? 
-                        `<div>First Purchase: ${firstPurchase.amount} USDT (${new Date(firstPurchase.purchaseDate).toLocaleDateString()})</div>` : '';
-                    
-                    div.innerHTML = `
-                        <div>
-                            <span class="email">${notif.email || userDetails.email || 'Unknown user'}</span> signed up using your UID
-                            <div class="user-details">
-                                <div class="time">${date.toLocaleString()}</div>
-                                <div>User ID: ${notif.userId}</div>
-                                ${userDetails.firstName ? `<div>Name: ${userDetails.firstName} ${userDetails.lastName || ''}</div>` : ''}
-                                ${userDetails.phone ? `<div>Phone: ${userDetails.phone}</div>` : ''}
-                                ${purchaseInfo}
+                    checkUserPurchases(notif.userId).then(hasPurchased => {
+                        const status = notif.claimed ? 'claimed' : (hasPurchased ? 'pending' : 'unclaimed');
+                        
+                        div.innerHTML = `
+                            <div>
+                                <span class="email">${notif.email}</span> signed up using your UID
+                                <div class="user-details">
+                                    <div class="time">${date.toLocaleString()}</div>
+                                    <div>User ID: ${notif.userId}</div>
+                                    ${notif.firstName ? `<div>Name: ${notif.firstName} ${notif.lastName || ''}</div>` : ''}
+                                </div>
+                                <span class="status-badge ${status}">
+                                    ${status === 'claimed' ? '✓ Claimed' : 
+                                     status === 'pending' ? '★ Ready to Claim' : '⌛ Waiting for Purchase'}
+                                </span>
                             </div>
-                            <span class="status-badge ${status}">
-                                ${status === 'claimed' ? '✓ Claimed' : 
-                                 status === 'pending' ? '★ Ready to Claim' : '⌛ Waiting for Purchase'}
-                            </span>
-                        </div>
-                        <div class="actions">
-                            ${!notif.claimed && hasPurchased ? 
-                                `<button class="claim-btn" onclick="claimReward('${adminUid}', '${notif.id}', '${notif.userId}')">
-                                    Claim ${Math.floor(firstPurchase.amount * 0.1)} Points
-                                </button>` : 
-                                notif.claimed ? '✓ Claimed' : ''}
-                        </div>
-                    `;
-                    
-                    container.appendChild(div);
-                }
-                
-                hideLoading();
+                            <div class="actions">
+                                ${!notif.claimed && hasPurchased ? 
+                                    `<button class="claim-btn" onclick="claimReward('${adminUid}', '${notif.id}', '${notif.userId}')">Claim Reward</button>` : 
+                                    notif.claimed ? '✓ Claimed' : ''}
+                            </div>
+                        `;
+                        
+                        container.appendChild(div);
+                    });
+                });
             });
         }
 
@@ -281,8 +217,8 @@
             }
         }
 
-        // Get the first purchase made by a user
-        async function getFirstPurchase(userId) {
+        // Get the first package price purchased by a user
+        async function getFirstPurchaseAmount(userId) {
             try {
                 const snapshot = await db.collection('investments')
                     .where('userId', '==', userId)
@@ -290,32 +226,29 @@
                     .limit(1)
                     .get();
                 
-                if (snapshot.empty) return null;
-                return snapshot.docs[0].data();
+                if (snapshot.empty) return 0;
+                return snapshot.docs[0].data().amount || 0;
             } catch (error) {
-                console.error("Error getting first purchase:", error);
-                return null;
+                console.error("Error getting first purchase amount:", error);
+                return 0;
             }
         }
 
         // Claim reward for a referred user's first purchase
         async function claimReward(adminUid, notificationId, referredUserId) {
-            showLoading();
             try {
-                // Get the first purchase
-                const firstPurchase = await getFirstPurchase(referredUserId);
-                if (!firstPurchase) {
+                // Get the first purchase amount
+                const purchaseAmount = await getFirstPurchaseAmount(referredUserId);
+                if (purchaseAmount <= 0) {
                     alert('This user has not made any purchases yet.');
-                    hideLoading();
                     return;
                 }
                 
                 // Calculate 10% of the purchase amount as points
-                const pointsToAward = Math.floor(firstPurchase.amount * 0.1);
+                const pointsToAward = Math.floor(purchaseAmount * 0.1);
                 
                 // Confirm with admin
-                if (!confirm(`Claim ${pointsToAward} points for ${firstPurchase.amount} USDT purchase?`)) {
-                    hideLoading();
+                if (!confirm(`Claim ${pointsToAward} points for ${purchaseAmount} USDT purchase?`)) {
                     return;
                 }
                 
@@ -324,7 +257,7 @@
                     claimed: true,
                     claimedAt: Date.now(),
                     pointsAwarded: pointsToAward,
-                    purchaseAmount: firstPurchase.amount,
+                    purchaseAmount: purchaseAmount,
                     read: true
                 });
                 
@@ -347,8 +280,6 @@
             } catch (error) {
                 console.error("Error claiming reward:", error);
                 alert('Error claiming reward. Please try again.');
-            } finally {
-                hideLoading();
             }
         }
     </script>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Signup/Login - SAFE</title>
+    <title>Signup/Login - VideoCall</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,7 +18,6 @@
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             width: 350px;
-            position: relative;
         }
         .tab-container {
             display: flex;
@@ -63,10 +62,6 @@
         button:hover {
             background-color: #0056b3;
         }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
         #message, #login-message {
             margin: 15px 0;
             padding: 10px;
@@ -90,24 +85,21 @@
         }
         .captcha-container {
             display: flex;
-            flex-direction: column;
             align-items: center;
             margin: 15px 0;
             gap: 10px;
         }
-        .captcha-image {
-            font-family: monospace;
+        .captcha-challenge {
             font-size: 18px;
             font-weight: bold;
             padding: 8px;
             background: #f0f0f0;
             border-radius: 4px;
+            min-width: 80px;
             text-align: center;
-            letter-spacing: 2px;
-            line-height: 1.5;
         }
         #captcha-input {
-            width: 100%;
+            flex: 1;
         }
         .refresh-captcha {
             background: none;
@@ -115,44 +107,6 @@
             color: #007bff;
             cursor: pointer;
             font-size: 18px;
-        }
-        .captcha-input-container {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
-        }
-        .loading-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #007bff;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -178,14 +132,12 @@
             <input type="text" id="admin-uid" placeholder="Admin UID (optional)">
             
             <div class="captcha-container">
-                <div class="captcha-image" id="captcha-challenge"></div>
-                <div class="captcha-input-container">
-                    <input type="text" id="captcha-input" placeholder="Enter the text above" required>
-                    <button type="button" class="refresh-captcha" onclick="generateCaptcha()" title="Refresh CAPTCHA">↻</button>
-                </div>
+                <div class="captcha-challenge" id="captcha-challenge"></div>
+                <button type="button" class="refresh-captcha" onclick="generateCaptcha()" title="Refresh CAPTCHA">↻</button>
+                <input type="text" id="captcha-input" placeholder="Enter the answer" required>
             </div>
             
-            <button id="signup-button" onclick="signUp()">Sign Up</button>
+            <button onclick="signUp()">Sign Up</button>
         </div>
 
         <div id="login-form" class="form-container">
@@ -193,14 +145,7 @@
             <div id="login-message"></div>
             <input type="email" id="login-email" placeholder="Email" required>
             <input type="password" id="login-password" placeholder="Password" required>
-            <button id="login-button" onclick="login()">Login</button>
-        </div>
-    </div>
-
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3 id="loading-message">Processing your request...</h3>
+            <button onclick="login()">Login</button>
         </div>
     </div>
 
@@ -229,43 +174,26 @@
         // CAPTCHA variables
         let captchaAnswer;
         
-        // CAPTCHA patterns from the image
-        const captchaPatterns = [
-            "TKSSP",
-            "BATSES",
-            "AMSBRAWSICH",
-            "WESCX",
-            "NBCGHT",
-            "XEWDN",
-            "IDIOTH",
-            "ANVSA",
-            "GABER"
-        ];
-        
         // Generate CAPTCHA challenge
         function generateCaptcha() {
-            const randomIndex = Math.floor(Math.random() * captchaPatterns.length);
-            captchaAnswer = captchaPatterns[randomIndex];
-            document.getElementById('captcha-challenge').textContent = captchaAnswer;
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operators = ['+', '-', '*'];
+            const operator = operators[Math.floor(Math.random() * operators.length)];
+            
+            let challenge, answer;
+            switch(operator) {
+                case '+': answer = num1 + num2; challenge = `${num1} + ${num2} = ?`; break;
+                case '-': answer = num1 - num2; challenge = `${num1} - ${num2} = ?`; break;
+                case '*': answer = num1 * num2; challenge = `${num1} × ${num2} = ?`; break;
+            }
+            
+            document.getElementById('captcha-challenge').textContent = challenge;
+            captchaAnswer = answer;
         }
         
         // Generate CAPTCHA on page load
         generateCaptcha();
-
-        // Show loading overlay
-        function showLoading(message = 'Processing your request...') {
-            document.getElementById('loading-message').textContent = message;
-            document.getElementById('loading-overlay').style.display = 'flex';
-            document.getElementById('signup-button').disabled = true;
-            document.getElementById('login-button').disabled = true;
-        }
-
-        // Hide loading overlay
-        function hideLoading() {
-            document.getElementById('loading-overlay').style.display = 'none';
-            document.getElementById('signup-button').disabled = false;
-            document.getElementById('login-button').disabled = false;
-        }
 
         // Tab switching
         function openTab(tabName) {
@@ -285,36 +213,33 @@
             return result;
         }
 
-        // Sign up function - FIXED VERSION
+        // Sign up function
         async function signUp() {
-            const firstName = document.getElementById('first-name').value.trim();
-            const lastName = document.getElementById('last-name').value.trim();
-            const email = document.getElementById('signup-email').value.trim();
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
-            const phone = document.getElementById('phone').value.trim();
-            const adminUid = document.getElementById('admin-uid').value.trim();
-            const userCaptchaInput = document.getElementById('captcha-input').value.trim();
+            const phone = document.getElementById('phone').value;
+            const adminUid = document.getElementById('admin-uid').value;
+            const userCaptchaInput = document.getElementById('captcha-input').value;
             
             // Validate CAPTCHA
-            if (userCaptchaInput.toUpperCase() !== captchaAnswer) {
+            if (parseInt(userCaptchaInput) !== captchaAnswer) {
                 showMessage('CAPTCHA verification failed. Please try again.', 'error');
                 generateCaptcha();
                 document.getElementById('captcha-input').value = '';
                 return;
             }
 
-            showLoading('Creating your account...');
-
             try {
-                // Create user in Firebase Auth
+                // Create user
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 const now = new Date();
                 const referralCode = generateReferralCode();
                 
-                // Create complete user data object for Firestore
+                // Create user data object
                 const userData = {
-                    id: user.uid,
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
@@ -325,72 +250,40 @@
                     depositBalance: 0,
                     taskEarnings: 0,
                     points: 0,
-                    lastLogin: null,
-                    emailVerified: false,
-                    invitedUsers: [],
-                    referredBy: adminUid || null
+                    lastLogin: null
                 };
 
-                // Save to Firestore - this is the critical fix
-                showLoading('Saving your data to database...');
+                // Save user data to Firestore
                 await db.collection('users').doc(user.uid).set(userData);
                 
-                // Also save to RTDB for real-time features (optional)
-                try {
-                    await rdb.ref('users/' + user.uid).set({
-                        email: email,
-                        firstName: firstName,
-                        lastName: lastName,
-                        status: 'active',
-                        lastLogin: null,
-                        emailVerified: false
-                    });
-                } catch (rtdbError) {
-                    console.warn("RTDB save failed (non-critical):", rtdbError);
-                }
+                // Save basic user data to RTDB (for real-time features if needed)
+                await rdb.ref('users/' + user.uid).set({
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    status: 'active',
+                    lastLogin: null
+                });
 
                 // Notify admin if UID was provided
                 if (adminUid) {
-                    showLoading('Notifying administrator...');
-                    try {
-                        await rdb.ref('admin_notifications/' + adminUid).push({
-                            type: 'new_signup',
-                            email: email,
-                            userId: user.uid,
-                            timestamp: Date.now(),
-                            read: false
-                        });
-                    } catch (notifyError) {
-                        console.warn("Admin notification failed (non-critical):", notifyError);
-                    }
+                    await rdb.ref('admin_notifications/' + adminUid).push({
+                        type: 'new_signup',
+                        email: email,
+                        userId: user.uid,
+                        timestamp: Date.now(),
+                        read: false
+                    });
                 }
 
-                showMessage('Account created successfully!', 'success');
-                setTimeout(() => window.location.href = 'home.html', 1500);
+                // Send verification email
+                await user.sendEmailVerification();
+                showMessage('Account created! Check your email for verification.', 'success');
+                setTimeout(() => window.location.href = 'home.html', 3000);
                 
             } catch (error) {
-                console.error('Signup error:', error);
-                
-                // Handle specific errors
-                let errorMessage = error.message;
-                if (error.code === 'auth/email-already-in-use') {
-                    errorMessage = 'This email is already registered. Please login instead.';
-                } else if (error.code === 'auth/weak-password') {
-                    errorMessage = 'Password should be at least 6 characters';
-                }
-                
-                showMessage(errorMessage, 'error');
-                
-                // Clean up if user was created but data saving failed
-                if (auth.currentUser) {
-                    try {
-                        await auth.currentUser.delete();
-                    } catch (deleteError) {
-                        console.error('Error cleaning up user:', deleteError);
-                    }
-                }
+                showMessage(error.message, 'error');
             } finally {
-                hideLoading();
                 generateCaptcha();
                 document.getElementById('captcha-input').value = '';
             }
@@ -398,39 +291,27 @@
 
         // Login function
         async function login() {
-            const email = document.getElementById('login-email').value.trim();
+            const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-
-            showLoading('Authenticating...');
 
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 const now = new Date();
                 
-                // Update last login time in Firestore
-                showLoading('Updating your session...');
+                // Update last login time in both Firestore and RTDB
                 await db.collection('users').doc(user.uid).update({
                     lastLogin: firebase.firestore.Timestamp.fromDate(now)
+                });
+                
+                await rdb.ref('users/' + user.uid).update({
+                    lastLogin: Date.now()
                 });
                 
                 showLoginMessage('Login successful! Redirecting...', 'success');
                 setTimeout(() => window.location.href = 'home.html', 1500);
             } catch (error) {
-                console.error('Login error:', error);
-                
-                let errorMessage = error.message;
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'No account found with this email';
-                } else if (error.code === 'auth/wrong-password') {
-                    errorMessage = 'Incorrect password';
-                } else if (error.code === 'auth/too-many-requests') {
-                    errorMessage = 'Too many attempts. Please try again later.';
-                }
-                
-                showLoginMessage(errorMessage, 'error');
-            } finally {
-                hideLoading();
+                showLoginMessage(error.message, 'error');
             }
         }
 
@@ -449,11 +330,11 @@
 
         // Check auth state
         auth.onAuthStateChanged((user) => {
-            if (user) {
-                // No longer checking email verification
+            if (user && user.emailVerified) {
                 window.location.href = 'home.html';
             }
         });
     </script>
 </body>
 </html>
+                        

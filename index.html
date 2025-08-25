@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Signup/Login - VideoCall</title>
+    <title>Signup/Login - SAFE</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -330,7 +330,7 @@
 
         // Check auth state
         auth.onAuthStateChanged((user) => {
-            if (user && user.emailVerified) {
+            if (user) {
                 window.location.href = 'home.html';
             }
         });

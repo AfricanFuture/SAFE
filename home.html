@@ -2,41 +2,39 @@
 <html>
 <head>
     <title>Dashboard - SAFE</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f4f4f4;
-            font-size: 18px; /* Increased base font size */
         }
         .container {
-            max-width: 800px; /* Increased container width */
+            max-width: 600px;
             margin: 0 auto;
             background-color: #fff;
-            padding: 30px; /* Increased padding */
-            border-radius: 12px; /* Larger border radius */
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             position: relative;
         }
         h1 {
             color: #333;
             text-align: center;
-            margin-bottom: 30px; /* Increased margin */
-            font-size: 32px; /* Larger heading */
+            margin-bottom: 20px;
+            font-size: 24px;
         }
         .balance-section {
             display: flex;
             justify-content: space-between;
-            margin: 30px 0; /* Increased margin */
-            gap: 15px; /* Increased gap */
+            margin: 20px 0;
+            gap: 10px;
         }
         .balance-card {
             flex: 1;
             color: white;
-            padding: 20px; /* Increased padding */
-            border-radius: 12px; /* Larger border radius */
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
         }
         .deposit-balance {
@@ -49,90 +47,83 @@
             background-color: #6f42c1;
         }
         .balance-label {
-            font-size: 18px; /* Larger label */
-            margin-bottom: 10px; /* Increased margin */
+            font-size: 12px;
+            margin-bottom: 5px;
         }
         .balance-amount {
-            font-size: 28px; /* Much larger amount */
+            font-size: 18px;
             font-weight: bold;
-            margin: 10px 0; /* Increased margin */
+            margin: 5px 0;
         }
         .nav-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px; /* Increased gap */
-            margin: 30px 0; /* Increased margin */
+            gap: 10px;
+            margin: 20px 0;
         }
         .nav-btn {
-            padding: 20px; /* Increased padding */
+            padding: 12px;
             background-color: #f8f9fa;
-            border-radius: 12px; /* Larger border radius */
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 120px; /* Taller buttons */
+            min-height: 80px;
             justify-content: center;
-            border: 1px solid #ddd; /* Added border */
         }
         .nav-btn:hover {
             background-color: #e9ecef;
-            transform: translateY(-5px); /* More pronounced hover effect */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Added shadow on hover */
+            transform: translateY(-3px);
         }
         .nav-btn i {
-            font-size: 36px; /* Larger icons */
-            margin-bottom: 15px; /* Increased margin */
+            font-size: 24px;
+            margin-bottom: 8px;
         }
         .nav-btn div {
-            font-size: 18px; /* Larger text */
-            font-weight: bold; /* Bolder text */
+            font-size: 14px;
         }
         .logout-btn {
             display: block;
             width: 100%;
-            padding: 15px; /* Increased padding */
+            padding: 10px;
             background-color: #dc3545;
             color: white;
             border: none;
-            border-radius: 8px; /* Larger border radius */
+            border-radius: 4px;
             cursor: pointer;
-            margin-top: 25px; /* Increased margin */
-            font-size: 18px; /* Larger text */
-            font-weight: bold; /* Bolder text */
+            margin-top: 15px;
         }
         .logout-btn:hover {
             background-color: #c82333;
         }
         .logo {
             text-align: center;
-            margin-bottom: 25px; /* Increased margin */
+            margin-bottom: 15px;
         }
         .logo img {
-            max-width: 180px; /* Larger logo */
+            max-width: 120px;
         }
         /* Profile dropdown styles */
         .profile-dropdown {
             position: absolute;
-            top: 25px; /* Adjusted position */
-            right: 25px; /* Adjusted position */
+            top: 15px;
+            right: 15px;
         }
         .profile-icon {
-            width: 50px; /* Larger icon */
-            height: 50px; /* Larger icon */
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background-color: #6f42c1;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px; /* Larger text */
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
-            border: 2px solid white; /* Added border */
-            box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Added shadow */
         }
         .profile-icon:hover {
             transform: scale(1.1);
@@ -142,10 +133,10 @@
             position: absolute;
             right: 0;
             background-color: #fff;
-            min-width: 280px; /* Wider dropdown */
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Stronger shadow */
-            border-radius: 12px; /* Larger border radius */
-            padding: 20px; /* Increased padding */
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 12px;
             z-index: 1;
         }
         .dropdown-content.show {
@@ -154,69 +145,55 @@
         .profile-header {
             display: flex;
             align-items: center;
-            margin-bottom: 15px; /* Increased margin */
-            padding-bottom: 15px; /* Increased padding */
+            margin-bottom: 12px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #eee;
         }
         .profile-avatar {
-            width: 50px; /* Larger avatar */
-            height: 50px; /* Larger avatar */
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background-color: #6f42c1;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px; /* Larger text */
-            margin-right: 15px; /* Increased margin */
+            font-size: 18px;
+            margin-right: 12px;
         }
         .profile-info {
             flex: 1;
         }
         .profile-name {
             font-weight: bold;
-            margin-bottom: 5px; /* Increased margin */
-            font-size: 18px; /* Larger text */
+            margin-bottom: 2px;
+            font-size: 14px;
         }
         .profile-email {
-            font-size: 16px; /* Larger text */
+            font-size: 12px;
             color: #6c757d;
-            margin-bottom: 5px; /* Increased margin */
+            margin-bottom: 4px;
         }
         .profile-meta {
-            font-size: 14px; /* Larger text */
+            font-size: 11px;
             color: #6c757d;
         }
         .dropdown-item {
-            padding: 12px 0; /* Increased padding */
+            padding: 8px 0;
             border-bottom: 1px solid #f8f9fa;
             display: flex;
             align-items: center;
-            font-size: 16px; /* Larger text */
+            font-size: 13px;
         }
         .dropdown-item i {
-            margin-right: 12px; /* Increased margin */
-            width: 25px; /* Larger icon space */
+            margin-right: 8px;
+            width: 20px;
             text-align: center;
-            font-size: 18px; /* Larger icons */
         }
         .dropdown-footer {
-            margin-top: 15px; /* Increased margin */
-            padding-top: 15px; /* Increased padding */
+            margin-top: 12px;
+            padding-top: 12px;
             border-top: 1px solid #eee;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            .balance-section {
-                flex-direction: column;
-            }
-            .nav-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
@@ -256,7 +233,7 @@
         </div>
 
         <div class="logo">
-            <img src="logo.png" alt="SAFE">
+            <img src="logo.png" alt="VideoCall">
         </div>
         <h1>Dashboard</h1>
         
@@ -331,7 +308,7 @@
         // Check authentication state
         auth.onAuthStateChanged((user) => {
             if (!user) {
-                window.location.href = 'index.html';
+                window.location.href = 'https://meerliinn.github.io/VideoCall/sign.html';
             } else {
                 loadUserData(user.uid);
             }
@@ -397,7 +374,7 @@
         function logout() {
             auth.signOut()
                 .then(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = 'https://meerliinn.github.io/VideoCall/sign.html';
                 })
                 .catch((error) => {
                     console.error("Logout error:", error);

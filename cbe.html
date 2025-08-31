@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBE Withdrawal - SAFE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --dark: #343a40;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .balance-card {
+            background-color: var(--info);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .form-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+            padding: 12px;
+        }
+        
+        .btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .text-muted {
+            color: #6c757d;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .text-danger {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .text-success {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .alert {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        .fee-info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        
+        .bank-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .bank-logo i {
+            font-size: 48px;
+            color: #1a4f8b;
+        }
+        
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-amount {
+            font-weight: bold;
+            color: var(--danger);
+        }
+        
+        .history-date {
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .badge-pending {
+            background-color: var(--warning);
+            color: #212529;
+        }
+        
+        .badge-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .badge-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bank-logo">
+            <i class="fas fa-university"></i>
+            <h2>Commercial Bank of Ethiopia</h2>
+        </div>
+        
+        <div class="balance-card">
+            <div>Available for Withdrawal</div>
+            <div class="balance-amount" id="withdraw-balance">0.00</div>
+            <div>USDT</div>
+            <div class="text-muted">Minimum withdrawal: <span class="text-danger">1500 ETB</span></div>
+            <div class="text-muted">Available Points: <span class="text-success" id="points-balance">0</span></div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Withdraw to CBE Account</h3>
+            <div class="form-group">
+                <label for="cbe-amount">Amount (ETB)</label>
+                <input type="number" id="cbe-amount" placeholder="Enter amount (min 1500 ETB)" min="1500" step="1">
+            </div>
+            
+            <div class="fee-info">
+                <div class="fee-row">
+                    <span>Exchange Rate:</span>
+                    <span>1 USDT = 150 ETB</span>
+                </div>
+                <div class="fee-row">
+                    <span>Withdrawal Amount:</span>
+                    <span id="cbe-display-amount">0.00 ETB</span>
+                </div>
+                <div class="fee-row">
+                    <span>Withdrawal Fee (10% in points):</span>
+                    <span id="cbe-display-fee">0 Points</span>
+                </div>
+                <div class="fee-row">
+                    <span>You will receive:</span>
+                    <span class="text-success" id="cbe-display-receive">0.00 ETB</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="full-name">Full Name (as per bank account)</label>
+                <input type="text" id="full-name" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="cbe-account-number">CBE Account Number</label>
+                <input type="text" id="cbe-account-number" placeholder="Enter your CBE account number">
+            </div>
+            <div class="form-group">
+                <label for="cbe-phone">Phone Number Linked to CBE Account</label>
+                <input type="tel" id="cbe-phone" placeholder="Enter your phone number">
+            </div>
+            <div class="form-group">
+                <label for="withdraw-code">4-Digit Withdrawal Code</label>
+                <input type="text" id="withdraw-code" placeholder="Enter your 4-digit withdrawal code" maxlength="4" pattern="\d{4}">
+                <div class="text-muted">
+                    <a href="#" onclick="recoverWithdrawalCode(); return false;">Forgot your code?</a>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block" id="submit-withdraw">
+                <i class="fas fa-paper-plane"></i> Request Withdrawal
+            </button>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> CBE withdrawals are processed within 24-48 hours.
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Withdrawal History</h3>
+            <div id="withdraw-history">
+                <div class="loading">Loading your withdrawal history...</div>
+            </div>
+        </div>
+        
+        <button class="btn btn-block" onclick="window.location.href='method.html'" style="background-color: #6c757d; color: white;">
+            <i class="fas fa-arrow-left"></i> Change Withdrawal Method
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAfsKcVP7OUo870TKkBnk4BfDEq9LnAK8",
+            authDomain: "newporoject-c6f66.firebaseapp.com",
+            databaseURL: "https://newporoject-c6f66-default-rtdb.firebaseio.com",
+            projectId: "newporoject-c6f66",
+            storageBucket: "newporoject-c6f66.appspot.com",
+            messagingSenderId: "733557611631",
+            appId: "1:733557611631:web:02c9377f56d614ff3b019a"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const rdb = firebase.database();
+
+        // DOM elements
+        const withdrawBalanceEl = document.getElementById('withdraw-balance');
+        const pointsBalanceEl = document.getElementById('points-balance');
+        const cbeAmountInput = document.getElementById('cbe-amount');
+        const fullNameInput = document.getElementById('full-name');
+        const accountNumberInput = document.getElementById('cbe-account-number');
+        const phoneInput = document.getElementById('cbe-phone');
+        const withdrawCodeInput = document.getElementById('withdraw-code');
+        const submitWithdrawBtn = document.getElementById('submit-withdraw');
+        const withdrawHistoryEl = document.getElementById('withdraw-history');
+        const cbeDisplayAmountEl = document.getElementById('cbe-display-amount');
+        const cbeDisplayFeeEl = document.getElementById('cbe-display-fee');
+        const cbeDisplayReceiveEl = document.getElementById('cbe-display-receive');
+
+        // Current user data
+        let currentUserData = {
+            earningsBalance: 0,
+            pointsBalance: 0
+        };
+
+        // Exchange rate (USDT to ETB)
+        const EXCHANGE_RATE = 150;
+
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+            } else {
+                loadUserData(user.uid);
+                loadWithdrawalHistory(user.uid);
+                setupWithdrawalListener(user.uid);
+                checkUserHasWithdrawalCode(user.uid);
+            }
+        });
+
+        // Calculate and display fee information
+        function calculateFee() {
+            const amount = parseFloat(cbeAmountInput.value) || 0;
+            const amountInUsdt = amount / EXCHANGE_RATE;
+            const feePoints = Math.ceil(amountInUsdt * 0.10); // 10% fee in points
+            const receiveAmount = amount.toFixed(2);
+            
+            cbeDisplayAmountEl.textContent = `${receiveAmount} ETB`;
+            cbeDisplayFeeEl.textContent = `${feePoints} Points`;
+            cbeDisplayReceiveEl.textContent = `${receiveAmount} ETB`;
+            
+            // Check if user has enough points for the fee
+            if (feePoints > currentUserData.pointsBalance) {
+                cbeDisplayFeeEl.innerHTML = `<span class="text-danger">${feePoints} Points (Insufficient)</span>`;
+                submitWithdrawBtn.disabled = true;
+                submitWithdrawBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Not Enough Points for Fee';
+            } else {
+                cbeDisplayFeeEl.innerHTML = `${feePoints} Points`;
+                
+                // Still check if they have enough balance
+                if (amountInUsdt > currentUserData.earningsBalance) {
+                    submitWithdrawBtn.disabled = true;
+                    submitWithdrawBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Insufficient Balance';
+                } else {
+                    submitWithdrawBtn.disabled = false;
+                    submitWithdrawBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
+                }
+            }
+        }
+
+        // Check if user has a withdrawal code
+        async function checkUserHasWithdrawalCode(userId) {
+            try {
+                const doc = await db.collection('withdrawalSecurity').doc(userId).get();
+                if (!doc.exists) {
+                    // User doesn't have a code yet, generate one
+                    generateWithdrawalCode(userId);
+                }
+            } catch (error) {
+                console.error("Error checking withdrawal code:", error);
+            }
+        }
+
+        // Generate a new withdrawal code
+        async function generateWithdrawalCode(userId) {
+            try {
+                const code = Math.floor(1000 + Math.random() * 9000).toString();
+                await db.collection('withdrawalSecurity').doc(userId).set({
+                    code: code,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showModal(`Your new withdrawal code is: <strong>${code}</strong><br><br>
+                Please save this code securely. You will need it for all future withdrawals.`);
+            } catch (error) {
+                console.error("Error generating withdrawal code:", error);
+                showAlert('Error generating withdrawal code. Please try again.', 'danger');
+            }
+        }
+
+        // Verify withdrawal code
+        async function verifyWithdrawalCode(userId, code) {
+            try {
+                const doc = await db.collection('withdrawalSecurity').doc(userId).get();
+                if (doc.exists) {
+                    return doc.data().code === code;
+                }
+                return false;
+            } catch (error) {
+                console.error("Error verifying withdrawal code:", error);
+                return false;
+            }
+        }
+
+        // Recover withdrawal code
+        async function recoverWithdrawalCode() {
+            const user = auth.currentUser;
+            if (!user) {
+                window.location.href = 'sign.html';
+                return;
+            }
+
+            const email = prompt("Please enter your registered email address to recover your withdrawal code:");
+            if (!email || email !== user.email) {
+                showAlert('Invalid email address provided', 'danger');
+                return;
+            }
+
+            try {
+                const doc = await db.collection('withdrawalSecurity').doc(user.uid).get();
+                if (doc.exists) {
+                    showModal(`To found Your withdrawal code  <strong><a href="https://t.me/t_o_ols"><button>Contact Support</button></a></strong><br><br>
+                    Please contact us on telegram to recover your withdrawal code. You will need it for all future withdrawals.`);
+                } else {
+                    showAlert('No withdrawal code found for your account. A new one will be generated.', 'warning');
+                    generateWithdrawalCode(user.uid);
+                }
+            } catch (error) {
+                console.error("Error recovering withdrawal code:", error);
+                showAlert('Error recovering withdrawal code. Please try again.', 'danger');
+            }
+        }
+
+        // Show modal dialog
+        function showModal(content) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+            modalContent.innerHTML = content;
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'modal-close';
+            closeBtn.innerHTML = '&times;';
+            closeBtn.onclick = function() {
+                document.body.removeChild(modal);
+            };
+            
+            modalContent.prepend(closeBtn);
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            };
+        }
+
+        // Load user data
+        function loadUserData(userId) {
+            db.collection('users').doc(userId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        const availableBalance = userData.taskEarnings || 0;
+                        const availablePoints = userData.points || 0;
+                        
+                        currentUserData.earningsBalance = availableBalance;
+                        currentUserData.pointsBalance = availablePoints;
+                        
+                        withdrawBalanceEl.textContent = availableBalance.toFixed(2);
+                        pointsBalanceEl.textContent = availablePoints;
+                        
+                        // Disable submit button if balance is less than minimum
+                        const minUsdt = 1500 / EXCHANGE_RATE; // Minimum in USDT
+                        submitWithdrawBtn.disabled = availableBalance < minUsdt;
+                        if (submitWithdrawBtn.disabled) {
+                            submitWithdrawBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Insufficient Balance';
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error loading user data:", error);
+                    showAlert('Error loading your balance. Please refresh the page.', 'danger');
+                });
+        }
+
+        // Load withdrawal history
+        function loadWithdrawalHistory(userId) {
+            rdb.ref('withdrawals').orderByChild('userId').equalTo(userId).once('value')
+                .then(snapshot => {
+                    withdrawHistoryEl.innerHTML = '';
+                    
+                    if (!snapshot.exists()) {
+                        withdrawHistoryEl.innerHTML = '<div class="loading">No withdrawal history yet</div>';
+                        return;
+                    }
+                    
+                    const withdrawals = [];
+                    snapshot.forEach(child => {
+                        const withdrawal = child.val();
+                        // Only show CBE withdrawals on this page
+                        if (withdrawal.method === 'cbe') {
+                            withdrawals.push({
+                                key: child.key,
+                                ...withdrawal
+                            });
+                        }
+                    });
+                    
+                    if (withdrawals.length === 0) {
+                        withdrawHistoryEl.innerHTML = '<div class="loading">No CBE withdrawal history yet</div>';
+                        return;
+                    }
+                    
+                    // Sort by timestamp (newest first)
+                    withdrawals.sort((a, b) => b.timestamp - a.timestamp);
+                    
+                    withdrawals.forEach(withdrawal => {
+                        const date = new Date(withdrawal.timestamp);
+                        const formattedDate = date.toLocaleString();
+                        
+                        let statusClass = 'badge-pending';
+                        let statusText = 'Pending';
+                        
+                        if (withdrawal.status === 'approved') {
+                            statusClass = 'badge-success';
+                            statusText = 'Completed';
+                        } else if (withdrawal.status === 'rejected') {
+                            statusClass = 'badge-danger';
+                            statusText = 'Rejected';
+                        }
+                        
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <div>
+                                <div class="history-amount">-${parseFloat(withdrawal.amount).toFixed(2)} ETB</div>
+                                <div class="history-date">${formattedDate}</div>
+                                ${withdrawal.feePoints ? `<div class="text-muted">Fee: ${withdrawal.feePoints} Points</div>` : ''}
+                            </div>
+                            <div>
+                                <span class="badge ${statusClass}">${statusText}</span>
+                            </div>
+                        `;
+                        withdrawHistoryEl.appendChild(historyItem);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error loading withdrawal history:", error);
+                    withdrawHistoryEl.innerHTML = '<div class="loading">Error loading withdrawal history</div>';
+                });
+        }
+
+        // Setup realtime listener for withdrawal status changes
+        function setupWithdrawalListener(userId) {
+            rdb.ref('withdrawals').orderByChild('userId').equalTo(userId).on('value', (snapshot) => {
+                loadWithdrawalHistory(userId);
+            });
+        }
+
+        // Submit withdrawal request
+        async function submitWithdrawal() {
+            const amount = parseFloat(cbeAmountInput.value);
+            const fullName = fullNameInput.value.trim();
+            const accountNumber = accountNumberInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const code = withdrawCodeInput.value.trim();
+            const user = auth.currentUser;
+            
+            // Validation
+            if (!amount || amount < 1500) {
+                showAlert('Minimum withdrawal amount is 1500 ETB', 'danger');
+                return;
+            }
+            
+            if (!fullName) {
+                showAlert('Please enter your full name', 'danger');
+                return;
+            }
+            
+            if (!accountNumber || accountNumber.length < 5) {
+                showAlert('Please enter a valid CBE account number', 'danger');
+                return;
+            }
+            
+            if (!phone || phone.length < 10) {
+                showAlert('Please enter a valid phone number', 'danger');
+                return;
+            }
+            
+            if (!code || code.length !== 4 || !/^\d+$/.test(code)) {
+                showAlert('Please enter a valid 4-digit withdrawal code', 'danger');
+                return;
+            }
+            
+            if (!user) {
+                window.location.href = 'sign.html';
+                return;
+            }
+            
+            // Calculate amount in USDT and fee
+            const amountInUsdt = amount / EXCHANGE_RATE;
+            const feePoints = Math.ceil(amountInUsdt * 0.10); // 10% fee in points
+            
+            // Verify withdrawal code
+            const isCodeValid = await verifyWithdrawalCode(user.uid, code);
+            if (!isCodeValid) {
+                showAlert('Invalid withdrawal code. Please try again.', 'danger');
+                return;
+            }
+            
+            // Check available balance and points
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (!userDoc.exists) {
+                    showAlert('User data not found', 'danger');
+                    return;
+                }
+                
+                const userData = userDoc.data();
+                const availableBalance = userData.taskEarnings || 0;
+                const availablePoints = userData.points || 0;
+                
+                if (amountInUsdt > availableBalance) {
+                    showAlert('Insufficient balance for this withdrawal', 'danger');
+                    return;
+                }
+                
+                if (feePoints > availablePoints) {
+                    showAlert('Insufficient points to cover the withdrawal fee', 'danger');
+                    return;
+                }
+                
+                // Disable button during processing
+                submitWithdrawBtn.disabled = true;
+                submitWithdrawBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                
+                // Create withdrawal record in Realtime DB for admin approval
+                const withdrawalRef = await rdb.ref('withdrawals').push({
+                    userId: user.uid,
+                    userEmail: user.email || 'no-email',
+                    amount: amount,
+                    amountInUsdt: amountInUsdt,
+                    fullName: fullName,
+                    accountNumber: accountNumber,
+                    phone: phone,
+                    method: 'cbe',
+                    status: 'pending',
+                    feePoints: feePoints,
+                    timestamp: Date.now(),
+                    processedAt: null,
+                    processedBy: null
+                });
+                
+                // Store the withdrawal key in Firestore for tracking
+                await db.collection('users').doc(user.uid).update({
+                    pendingWithdrawals: firebase.firestore.FieldValue.arrayUnion(withdrawalRef.key)
+                });
+                
+                showAlert('Withdrawal request submitted for admin approval!', 'success');
+                
+                // Clear form
+                cbeAmountInput.value = '';
+                fullNameInput.value = '';
+                accountNumberInput.value = '';
+                phoneInput.value = '';
+                withdrawCodeInput.value = '';
+                
+                // Refresh data
+                loadUserData(user.uid);
+                
+            } catch (error) {
+                console.error('Error submitting withdrawal:', error);
+                showAlert('Error submitting withdrawal. Please try again.', 'danger');
+            } finally {
+                submitWithdrawBtn.disabled = false;
+                submitWithdrawBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
+            }
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'danger' ? 'exclamation-triangle' : 'check-circle'}"></i> ${message}`;
+            
+            const formSection = document.querySelector('.form-section');
+            formSection.insertBefore(alertDiv, formSection.firstChild);
+            
+            // Remove alert after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Event listeners
+        submitWithdrawBtn.addEventListener('click', submitWithdrawal);
+        cbeAmountInput.addEventListener('input', calculateFee);
+    </script>
+</body>
+</html>

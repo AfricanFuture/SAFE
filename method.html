@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Withdrawal Method - SAFE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --dark: #343a40;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #6c757d;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .method-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .method-card {
+            background-color: #fff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .method-card.selected {
+            border-color: var(--primary);
+            background-color: #e8f4ff;
+        }
+        
+        .method-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .crypto-icon {
+            background-color: #e8f4ff;
+            color: var(--primary);
+        }
+        
+        .bank-icon {
+            background-color: #fff0e8;
+            color: #fd7e14;
+        }
+        
+        .method-info {
+            flex: 1;
+        }
+        
+        .method-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .method-description {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .method-details {
+            font-size: 12px;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choose Withdrawal Method</h1>
+        <p class="description">Select how you would like to withdraw your funds</p>
+        
+        <div class="method-cards">
+            <div class="method-card" data-method="crypto">
+                <div class="method-icon crypto-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="method-info">
+                    <div class="method-title">Cryptocurrency (USDT)</div>
+                    <div class="method-description">Withdraw using USDT on TRC20 network</div>
+                    <div class="method-details">
+                        <i class="fas fa-info-circle"></i> Fast processing • Minimum 15 USDT • 10% fee in points
+                    </div>
+                </div>
+            </div>
+            
+            <div class="method-card" data-method="cbe">
+                <div class="method-icon bank-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="method-info">
+                    <div class="method-title">Commercial Bank of Ethiopia</div>
+                    <div class="method-description">Withdraw to your CBE bank account</div>
+                    <div class="method-details">
+                        <i class="fas fa-info-circle"></i> 24-48 hour processing • Minimum 500 ETB • 10% fee in points
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="continue-btn" class="btn btn-primary" disabled>
+            Continue to Withdrawal
+        </button>
+        
+        <a href="home.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <script>
+        // DOM elements
+        const methodCards = document.querySelectorAll('.method-card');
+        const continueBtn = document.getElementById('continue-btn');
+        let selectedMethod = null;
+
+        // Add click event to method cards
+        methodCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove selected class from all cards
+                methodCards.forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                card.classList.add('selected');
+                
+                // Set selected method
+                selectedMethod = card.getAttribute('data-method');
+                
+                // Enable continue button
+                continueBtn.disabled = false;
+                
+                // Update button text based on selection
+                if (selectedMethod === 'crypto') {
+                    continueBtn.textContent = 'Continue to USDT Withdrawal';
+                } else {
+                    continueBtn.textContent = 'Continue to CBE Withdrawal';
+                }
+            });
+        });
+
+        // Continue button click event
+        continueBtn.addEventListener('click', () => {
+            if (selectedMethod === 'crypto') {
+                window.location.href = 'withdraw.html';
+            } else if (selectedMethod === 'cbe') {
+                window.location.href = 'cbe.html';
+            }
+        });
+    </script>
+</body>
+</html>

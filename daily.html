@@ -145,6 +145,15 @@
             text-align: center;
             border: 1px solid #ffeeba;
         }
+        .claim-counter {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .claim-completed {
+            color: #dc3545;
+            font-weight: bold;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -280,6 +289,14 @@
                             dailyEarnings = (investment.amount * investment.dailyEarnings) / 100;
                         }
                         
+                        // Calculate days claimed
+                        const purchaseDate = investment.purchaseDate.toDate();
+                        const daysSincePurchase = Math.floor((Date.now() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24));
+                        const daysClaimed = investment.daysClaimed || 0;
+                        
+                        // Check if investment has reached its limit (120 days)
+                        const isCompleted = daysClaimed >= investment.duration;
+                        
                         const taskItem = document.createElement('div');
                         taskItem.className = 'task-item';
                         taskItem.innerHTML = `
@@ -290,9 +307,12 @@
                             <div class="task-description">
                                 Claim your daily earnings from this investment package.
                             </div>
-                            <button class="claim-btn" onclick="claimDailyEarnings('${doc.id}', ${dailyEarnings})" 
-                                ${(alreadyClaimed || isWeekend()) ? 'disabled' : ''}>
-                                ${alreadyClaimed ? 'Already Claimed Today' : isWeekend() ? 'Weekend - Claim Disabled' : 'Claim Earnings'}
+                            <div class="claim-counter ${isCompleted ? 'claim-completed' : ''}">
+                                Days claimed: ${daysClaimed}/${investment.duration}
+                            </div>
+                            <button class="claim-btn" onclick="claimDailyEarnings('${doc.id}', ${dailyEarnings}, ${investment.duration})" 
+                                ${(alreadyClaimed || isWeekend() || isCompleted) ? 'disabled' : ''}>
+                                ${isCompleted ? 'Package Completed' : alreadyClaimed ? 'Already Claimed Today' : isWeekend() ? 'Weekend - Claim Disabled' : 'Claim Earnings'}
                             </button>
                             ${alreadyClaimed ? 
                                 `<div class="task-status task-completed">Last claimed: ${lastClaimDate.toLocaleString()}</div>` : 
@@ -304,7 +324,7 @@
         }
 
         // Claim daily earnings
-        async function claimDailyEarnings(investmentId, amount) {
+        async function claimDailyEarnings(investmentId, amount, duration) {
             const user = auth.currentUser;
             if (!user) {
                 window.location.href = 'sign.html';
@@ -318,10 +338,27 @@
             }
             
             try {
-                // Update investment record with last claim date
+                // Get current investment data
+                const investmentDoc = await db.collection('investments').doc(investmentId).get();
+                if (!investmentDoc.exists) {
+                    alert('Investment not found.');
+                    return;
+                }
+                
+                const investmentData = investmentDoc.data();
+                const daysClaimed = investmentData.daysClaimed || 0;
+                
+                // Check if investment has reached its limit
+                if (daysClaimed >= duration) {
+                    alert('This investment package has already reached its maximum claim limit.');
+                    return;
+                }
+                
+                // Update investment record with last claim date and increment days claimed
                 await db.collection('investments').doc(investmentId).update({
                     lastPayoutDate: firebase.firestore.FieldValue.serverTimestamp(),
-                    totalEarned: firebase.firestore.FieldValue.increment(amount)
+                    totalEarned: firebase.firestore.FieldValue.increment(amount),
+                    daysClaimed: firebase.firestore.FieldValue.increment(1)
                 });
                 
                 // Update user's earnings balance
